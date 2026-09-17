@@ -1,0 +1,6 @@
+{
+  "name": "SAFA — Personal Life OS",
+  "description": "A private, intelligent, extensible Personal Life Operating System for Safa. Universal object model, connected graph, calm luxury, and mobile-first productivity.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
