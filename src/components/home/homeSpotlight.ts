@@ -25,9 +25,9 @@ export function getLivingAtmosphere(hour: number, dayOfWeek: number): DailyAtmos
   if (hour >= 5 && hour < 12) {
     return {
       greetingEn: 'Good morning, Safa',
-      greetingFa: 'صبح به‌خیر، صفا',
-      subtitleEn: 'Today is yours. Breathe, focus, and create.',
-      subtitleFa: 'امروز برای توئه. آرامش، آفرینش و حضور.',
+      greetingFa: 'صبح به‌خیر، صفای عزیز',
+      subtitleEn: 'Today is yours. Breathe, create, and enjoy the quiet moments.',
+      subtitleFa: 'امروز برای توئه؛ با آرامش نفس بکش، خلق کن و از لحظه‌هات لذت ببر.',
       themeTag: 'Morning Light',
       accentColor: '#F59E0B', // Warm Amber / Golden Dawn
       orbGradient: 'radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.35), rgba(244, 63, 94, 0.2) 50%, rgba(14, 14, 19, 0.05) 80%)',
@@ -35,9 +35,9 @@ export function getLivingAtmosphere(hour: number, dayOfWeek: number): DailyAtmos
   } else if (hour >= 12 && hour < 17) {
     return {
       greetingEn: 'Good afternoon, Safa',
-      greetingFa: 'عصر به‌خیر، صفا',
-      subtitleEn: 'Flowing with creative clarity and quiet focus.',
-      subtitleFa: 'جریان آفرینش در سکوت و تمرکز.',
+      greetingFa: 'عصر به‌خیر، صفا جان',
+      subtitleEn: 'Flowing through the day with quiet focus and inspiration.',
+      subtitleFa: 'جریان آرام روز در آتلیه؛ پر از تمرکز و حس‌های خوب.',
       themeTag: 'Atelier Sunlight',
       accentColor: '#E0E7FF', // Pearl Sapphire
       orbGradient: 'radial-gradient(circle at 45% 45%, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.18) 55%, rgba(14, 14, 19, 0.05) 80%)',
@@ -45,9 +45,9 @@ export function getLivingAtmosphere(hour: number, dayOfWeek: number): DailyAtmos
   } else if (hour >= 17 && hour < 21) {
     return {
       greetingEn: 'Good evening, Safa',
-      greetingFa: 'غروب به‌خیر، صفا',
-      subtitleEn: 'A golden hour for unwinding and reflections.',
-      subtitleFa: 'لحظه‌های طلایی غروب، آرامش و مرور زیبایی‌ها.',
+      greetingFa: 'غروب به‌خیر، صفای عزیز',
+      subtitleEn: 'A golden hour for unwinding, good music, and reflections.',
+      subtitleFa: 'لحظه‌های طلایی غروب؛ چای گرم، موسیقی خوب و آرامش دل.',
       themeTag: 'Twilight Hour',
       accentColor: '#F43F5E', // Rose Velvet
       orbGradient: 'radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.35), rgba(168, 85, 247, 0.22) 55%, rgba(14, 14, 19, 0.05) 85%)',
@@ -55,9 +55,9 @@ export function getLivingAtmosphere(hour: number, dayOfWeek: number): DailyAtmos
   } else {
     return {
       greetingEn: 'Peaceful night, Safa',
-      greetingFa: 'شب آرام، صفا',
-      subtitleEn: 'Rest your thoughts in stillness and gratitude.',
-      subtitleFa: 'آرامش شبانه، سکوت و صفای درون.',
+      greetingFa: 'شب آرام، صفای جان',
+      subtitleEn: 'Rest your thoughts in stillness and peaceful dreams.',
+      subtitleFa: 'آرامش شبانه و خلوت دل؛ استراحت کن و به رویاهات فکر کن.',
       themeTag: 'Deep Obsidian',
       accentColor: '#8B5CF6', // Nocturne Violet
       orbGradient: 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.28), rgba(59, 130, 246, 0.15) 60%, rgba(14, 14, 19, 0.02) 85%)',
