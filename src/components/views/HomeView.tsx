@@ -1,20 +1,20 @@
 /**
- * SAFA — Home 3.0: Living Home Experience (Build 03)
- * From Productivity Dashboard → Safa's Personal Living World
+ * SAFA — Home 4.0: Living World & Home Composition Engine (Build 04)
+ * SLE (SAFA Living Experience) + SOLG (SAFA Obsidian Liquid Glass).
  *
- * Core Concept:
- * LIFE + SELF + CREATION + MEMORY + INSPIRATION + CONTEXT + EXECUTION
+ * Architecture:
+ * Universal Object Graph + Context Engine → Home Composition Engine → Composed Living Surfaces
  *
- * Visual Rhythm:
- * GREETING & 3D LIVING HERO (Atmosphere)
- * → DAILY INTENTION (Emotional Typography)
- * → ATELIER & CREATIVE WORLD (Visual & Tactile)
- * → DAILY FORTUNE / FAL (Interactive Delight)
- * → NOW IN MUSIC (Media Atmosphere)
- * → INSPIRATION RAIL (Horizontal Visuals)
- * → EXECUTION LAYER (Date Rail, Focus, Daily Timeline, Actions)
- * → MOVEMENT & VITALITY (Wellness)
- * → MEMORY & TRAVEL DREAMS (Sanctuary)
+ * Visual & Emotional Flow:
+ * 1. ATMOSPHERE (Living Hero & Celestial Depth Sculpture)
+ * 2. EDITORIAL WHISPER (Daily Intention)
+ * 3. TEMPORAL HORIZON (Today Rail)
+ * 4. PERSONAL SPOTLIGHT (Hero Creative / Media / Archival Moment)
+ * 5. LIVING MEDIA & MOVEMENT (Music & Mindful Rhythm)
+ * 6. ATELIER & INSPIRATION (Editorial Fashion & Visual Moods)
+ * 7. SANCTUARY WORLDS (Books, Memories & Wanderlust Dreams)
+ * 8. DAILY FORTUNE (Playful Micro-Delight Whisper)
+ * 9. YOUR DAY & FLOW (Execution: Focus, Real Schedule Timeline, Tasks & Habits)
  */
 
 import React, { useState, useMemo } from 'react';
@@ -27,6 +27,7 @@ import { BaseObject, ObjectType, ObjectStatus } from '../../core/types/objects';
 // Modular Home Components
 import { LivingHero } from '../home/LivingHero';
 import { DailyMoment } from '../home/DailyMoment';
+import { TodayRail } from '../home/TodayRail';
 import { DailyFortune } from '../home/DailyFortune';
 import { AtelierMoment } from '../home/AtelierMoment';
 import { MusicMoment } from '../home/MusicMoment';
@@ -36,7 +37,13 @@ import { MemoryMoment } from '../home/MemoryMoment';
 import { ReadingMoment } from '../home/ReadingMoment';
 import { TravelMoment } from '../home/TravelMoment';
 import { ExecutionSection } from '../home/ExecutionSection';
-import { getDailySpotlightTheme } from '../home/homeSpotlight';
+
+// Composition Engine
+import {
+  composeHomeExperience,
+  getTimeOfDay,
+  HomeCompositionResult,
+} from '../home/homeComposition';
 
 export function HomeView() {
   const { user, isRTL } = useAuth();
@@ -44,79 +51,25 @@ export function HomeView() {
   const { objects, updateObject, setSelectedObject } = useObjects();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const isDark = themeMode === 'dark';
+  const now = new Date();
+  const isToday =
+    selectedDate.getFullYear() === now.getFullYear() &&
+    selectedDate.getMonth() === now.getMonth() &&
+    selectedDate.getDate() === now.getDate();
 
-  // Dynamic Day-of-Week Spotlight theme
-  const spotlightTheme = useMemo(() => getDailySpotlightTheme(selectedDate), [selectedDate]);
+  // Run the Home Composition Engine over the Object Graph & context
+  const composition: HomeCompositionResult = useMemo(() => {
+    return composeHomeExperience({
+      currentTime: now,
+      selectedDate,
+      isToday,
+      dayOfWeek: selectedDate.getDay(),
+      timeOfDay: getTimeOfDay(now),
+      objects,
+    });
+  }, [objects, selectedDate, isToday]);
 
-  // Specific Object Graph Selectors
-  const songObject = useMemo(
-    () => objects.find((o) => o.type === ObjectType.SONG && o.status !== ObjectStatus.TRASHED),
-    [objects]
-  );
-
-  const atelierProject = useMemo(
-    () =>
-      objects.find(
-        (o) =>
-          (o.type === ObjectType.FASHION_PROJECT ||
-            (o.type === ObjectType.PROJECT &&
-              (o.tags.includes('fashion') || o.tags.includes('atelier')))) &&
-          o.status !== ObjectStatus.TRASHED
-      ),
-    [objects]
-  );
-
-  const sketchObject = useMemo(
-    () => objects.find((o) => o.type === ObjectType.SKETCH && o.status !== ObjectStatus.TRASHED),
-    [objects]
-  );
-
-  const movementHabit = useMemo(
-    () =>
-      objects.find(
-        (o) =>
-          o.type === ObjectType.HABIT &&
-          (o.tags.includes('movement') || o.tags.includes('wellness') || o.tags.includes('pilates')) &&
-          o.status !== ObjectStatus.TRASHED
-      ) || objects.find((o) => o.type === ObjectType.HABIT && o.status !== ObjectStatus.TRASHED),
-    [objects]
-  );
-
-  const inspirationItems = useMemo(
-    () =>
-      objects.filter(
-        (o) =>
-          (o.type === ObjectType.PHOTO ||
-            o.type === ObjectType.SKETCH ||
-            o.tags.includes('inspiration') ||
-            o.tags.includes('aesthetic')) &&
-          o.status !== ObjectStatus.TRASHED
-      ),
-    [objects]
-  );
-
-  const memoryObject = useMemo(
-    () =>
-      objects.find(
-        (o) =>
-          (o.type === ObjectType.MEMORY || o.type === ObjectType.JOURNAL_ENTRY) &&
-          o.status !== ObjectStatus.TRASHED
-      ),
-    [objects]
-  );
-
-  const bookObject = useMemo(
-    () => objects.find((o) => o.type === ObjectType.BOOK && o.status !== ObjectStatus.TRASHED),
-    [objects]
-  );
-
-  const tripObject = useMemo(
-    () => objects.find((o) => o.type === ObjectType.TRIP && o.status !== ObjectStatus.TRASHED),
-    [objects]
-  );
-
-  // Quick Action Handlers
+  // Quick Interactive Handlers
   const handleToggleTask = async (task: BaseObject, e: React.MouseEvent) => {
     e.stopPropagation();
     const isDone = task.status === ObjectStatus.COMPLETED;
@@ -147,140 +100,226 @@ export function HomeView() {
 
   return (
     <div className="space-y-6 pb-28 max-w-2xl mx-auto px-2 sm:px-4 select-none">
-      {/* 1. Living Header & Atmospheric 3D Depth Sculpture */}
+      {/* 1. Living Header & Atmospheric Celestial Depth Sculpture */}
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.28 }}
       >
         <LivingHero selectedDate={selectedDate} onOpenCapture={() => openCapture()} />
       </motion.div>
 
-      {/* 2. Today's Emotional Intention (Editorial Typography) */}
+      {/* 2. Today's Emotional Intention (Editorial Typography & Breathing Space) */}
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.05 }}
+        transition={{ duration: 0.28, delay: 0.04 }}
       >
         <DailyMoment />
       </motion.div>
 
-      {/* 3. Creative & Fashion Atelier Moment */}
+      {/* 3. Temporal Horizon (Tactile Today Date Rail) */}
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
+        transition={{ duration: 0.28, delay: 0.08 }}
+        className="pt-1 pb-1"
       >
-        <AtelierMoment
-          atelierProject={atelierProject}
-          sketchObject={sketchObject}
-          onSelectObject={(obj) => setSelectedObject(obj)}
-          onNewDesign={() => openCapture()}
-        />
+        <TodayRail selectedDate={selectedDate} onSelectDate={setSelectedDate} />
       </motion.div>
 
-      {/* 4. Daily Fortune / Fal (Interactive Poetic Whispers) */}
+      {/* 4. Primary Spotlight Moment (Driven by Composition Engine) */}
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.15 }}
+        transition={{ duration: 0.28, delay: 0.12 }}
+      >
+        {composition.spotlightDomain === 'ATELIER' && (
+          <AtelierMoment
+            atelierProject={composition.atelierProject}
+            sketchObject={composition.sketchObject}
+            onSelectObject={(obj) => setSelectedObject(obj)}
+            onNewDesign={() => openCapture()}
+          />
+        )}
+        {composition.spotlightDomain === 'MUSIC' && (
+          <MusicMoment
+            songObject={composition.songObject}
+            onSelectObject={(obj) => setSelectedObject(obj)}
+            onCaptureMusic={() => openCapture()}
+          />
+        )}
+        {composition.spotlightDomain === 'MOVEMENT' && (
+          <MovementMoment
+            movementHabit={composition.movementHabit}
+            onSelectHabit={(obj) => setSelectedObject(obj)}
+            onCheckIn={handleIncrementHabit}
+            onAddMovement={() => openCapture()}
+          />
+        )}
+        {composition.spotlightDomain === 'INSPIRATION' && (
+          <InspirationRail
+            items={composition.inspirationItems}
+            onSelectItem={(obj) => setSelectedObject(obj)}
+            onAddInspiration={() => openCapture()}
+          />
+        )}
+        {composition.spotlightDomain === 'MEMORY' && (
+          <MemoryMoment
+            memoryObject={composition.memoryObject}
+            onSelectMemory={(obj) => setSelectedObject(obj)}
+            onCaptureMemory={() => openCapture()}
+          />
+        )}
+        {composition.spotlightDomain === 'READING' && (
+          <ReadingMoment
+            bookObject={composition.bookObject}
+            onSelectBook={(obj) => setSelectedObject(obj)}
+            onAddBook={() => openCapture()}
+          />
+        )}
+        {composition.spotlightDomain === 'TRAVEL' && (
+          <TravelMoment
+            tripObject={composition.tripObject}
+            onSelectTrip={(obj) => setSelectedObject(obj)}
+            onAddTrip={() => openCapture()}
+          />
+        )}
+      </motion.div>
+
+      {/* 5. Living Media & Movement Grid (Dynamic Visual Balance) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {composition.spotlightDomain !== 'MUSIC' && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, delay: 0.16 }}
+          >
+            <MusicMoment
+              songObject={composition.songObject}
+              onSelectObject={(obj) => setSelectedObject(obj)}
+              onCaptureMusic={() => openCapture()}
+            />
+          </motion.div>
+        )}
+
+        {composition.spotlightDomain !== 'MOVEMENT' && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, delay: 0.18 }}
+          >
+            <MovementMoment
+              movementHabit={composition.movementHabit}
+              onSelectHabit={(obj) => setSelectedObject(obj)}
+              onCheckIn={handleIncrementHabit}
+              onAddMovement={() => openCapture()}
+            />
+          </motion.div>
+        )}
+      </div>
+
+      {/* 6. Creative Atelier & Inspiration Visuals */}
+      {composition.spotlightDomain !== 'ATELIER' && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, delay: 0.2 }}
+        >
+          <AtelierMoment
+            atelierProject={composition.atelierProject}
+            sketchObject={composition.sketchObject}
+            onSelectObject={(obj) => setSelectedObject(obj)}
+            onNewDesign={() => openCapture()}
+          />
+        </motion.div>
+      )}
+
+      {composition.spotlightDomain !== 'INSPIRATION' && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, delay: 0.22 }}
+        >
+          <InspirationRail
+            items={composition.inspirationItems}
+            onSelectItem={(obj) => setSelectedObject(obj)}
+            onAddInspiration={() => openCapture()}
+          />
+        </motion.div>
+      )}
+
+      {/* 7. Daily Fortune / Fal (Delightful Interactive Micro-Whisper) */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.28, delay: 0.24 }}
       >
         <DailyFortune />
       </motion.div>
 
-      {/* 5. Music Moment (Now / Today in Music) */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
-      >
-        <MusicMoment
-          songObject={songObject}
-          onSelectObject={(obj) => setSelectedObject(obj)}
-          onCaptureMusic={() => openCapture()}
-        />
-      </motion.div>
+      {/* 8. Sanctuary Layer (Reading, Memory, Travel Dreams) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {composition.spotlightDomain !== 'READING' && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, delay: 0.26 }}
+          >
+            <ReadingMoment
+              bookObject={composition.bookObject}
+              onSelectBook={(obj) => setSelectedObject(obj)}
+              onAddBook={() => openCapture()}
+            />
+          </motion.div>
+        )}
 
-      {/* 6. Inspiration Moment (Horizontal Visual Rail) */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.25 }}
-      >
-        <InspirationRail
-          items={inspirationItems}
-          onSelectItem={(obj) => setSelectedObject(obj)}
-          onAddInspiration={() => openCapture()}
-        />
-      </motion.div>
+        {composition.spotlightDomain !== 'TRAVEL' && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, delay: 0.28 }}
+          >
+            <TravelMoment
+              tripObject={composition.tripObject}
+              onSelectTrip={(obj) => setSelectedObject(obj)}
+              onAddTrip={() => openCapture()}
+            />
+          </motion.div>
+        )}
+      </div>
 
-      {/* 7. Calm Execution Layer (Timeline, Focus, Schedule, Tasks & Habits) */}
+      {composition.spotlightDomain !== 'MEMORY' && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, delay: 0.3 }}
+        >
+          <MemoryMoment
+            memoryObject={composition.memoryObject}
+            onSelectMemory={(obj) => setSelectedObject(obj)}
+            onCaptureMemory={() => openCapture()}
+          />
+        </motion.div>
+      )}
+
+      {/* 9. Calm Execution Layer (Anchored Below Living Content) */}
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
+        transition={{ duration: 0.28, delay: 0.32 }}
       >
         <ExecutionSection
           selectedDate={selectedDate}
-          onSelectDate={setSelectedDate}
           objects={objects}
+          timelineItems={composition.scheduledTimelineItems}
+          focusObject={composition.focusObject}
+          activeTasks={composition.activeTasks}
+          activeHabits={composition.activeHabits}
           onSelectObject={(obj) => setSelectedObject(obj)}
           onToggleTask={handleToggleTask}
           onIncrementHabit={handleIncrementHabit}
           onOpenCapture={() => openCapture()}
-        />
-      </motion.div>
-
-      {/* 8. Movement & Vitality Moment */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.35 }}
-      >
-        <MovementMoment
-          movementHabit={movementHabit}
-          onSelectHabit={(obj) => setSelectedObject(obj)}
-          onCheckIn={handleIncrementHabit}
-          onAddMovement={() => openCapture()}
-        />
-      </motion.div>
-
-      {/* 9. Reading & Book Moment */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.4 }}
-      >
-        <ReadingMoment
-          bookObject={bookObject}
-          onSelectBook={(obj) => setSelectedObject(obj)}
-          onAddBook={() => openCapture()}
-        />
-      </motion.div>
-
-      {/* 10. Travel & Dream Moment */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.45 }}
-      >
-        <TravelMoment
-          tripObject={tripObject}
-          onSelectTrip={(obj) => setSelectedObject(obj)}
-          onAddTrip={() => openCapture()}
-        />
-      </motion.div>
-
-      {/* 11. Personal Memory Moment */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.5 }}
-      >
-        <MemoryMoment
-          memoryObject={memoryObject}
-          onSelectMemory={(obj) => setSelectedObject(obj)}
-          onCaptureMemory={() => openCapture()}
         />
       </motion.div>
     </div>

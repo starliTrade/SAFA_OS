@@ -1,41 +1,34 @@
 /**
- * SAFA — Daily Timeline & Live Moment Indicator (Build 02.1)
- * Obsidian Liquid Glass (SOLG) Daily Schedule & Real-Time "NOW" Track
+ * SAFA — Daily Timeline & Real-Time Schedule Track (Build 04)
+ * Strictly REAL Object Graph Projection.
+ * Zero fabricated schedule items.
+ * Shows scheduled events, time-locked tasks, deadlines, or a beautiful poetic invitation.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Clock, CheckCircle2, Circle, Sparkles, MapPin, Check } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Clock, Check, Sparkles, Plus, Calendar, ArrowUpRight } from 'lucide-react';
 import { BaseObject, ObjectType, ObjectStatus } from '../../core/types/objects';
 import { useAuth } from '../../core/context/AuthContext';
 import { useApp } from '../../core/context/AppContext';
-
-interface TimelineItem {
-  id: string;
-  time: string;
-  hour: number;
-  minute: number;
-  title: string;
-  category: 'STUDIO' | 'LIFE' | 'PERSONAL' | 'REST' | 'RITUAL';
-  description?: string;
-  isCompleted?: boolean;
-  objectId?: string;
-  location?: string;
-}
+import { TimelineScheduleItem } from './homeComposition';
 
 interface DailyTimelineProps {
   selectedDate: Date;
   isToday: boolean;
+  timelineItems?: TimelineScheduleItem[];
   objects?: BaseObject[];
   onSelectObject?: (object: BaseObject) => void;
-  onToggleTask?: (objectId: string) => void;
+  onOpenCapture?: () => void;
 }
 
 export function DailyTimeline({
   selectedDate,
   isToday,
+  timelineItems = [],
   objects = [],
   onSelectObject,
-  onToggleTask,
+  onOpenCapture,
 }: DailyTimelineProps) {
   const { isRTL } = useAuth();
   const { themeMode } = useApp();
@@ -59,208 +52,189 @@ export function DailyTimeline({
     hour12: true,
   });
 
-  // Pull active tasks with due dates or times if available, or assemble daily rhythm
-  const timelineItems: TimelineItem[] = React.useMemo(() => {
-    // Check if real objects can map to today
-    const taskObjects = objects.filter((o) => o.type === ObjectType.TASK && o.status !== ObjectStatus.TRASHED);
-
-    const baseItems: TimelineItem[] = [
-      {
-        id: 't-1',
-        time: '08:30',
-        hour: 8,
-        minute: 30,
-        title: isRTL ? 'مراقبه صبحگاهی و دم‌نوش آرامش' : 'Morning Meditation & Herbal Tea',
-        category: 'RITUAL',
-        description: isRTL ? '۱۰ دقیقه تنفس عمیق و ثبت حضور در صفا' : '10 minutes stillness, journaling in SAFA',
-        isCompleted: isToday ? true : false,
-      },
-      {
-        id: 't-2',
-        time: '10:30',
-        hour: 10,
-        minute: 30,
-        title: isRTL ? 'کارگاه طراحی پارچه و پالت رنگ' : 'Fashion Atelier: Silk Draping & Swatches',
-        category: 'STUDIO',
-        description: isRTL ? 'بررسی نمونه‌های پارچه ابریشم و کتان' : 'Autumn Capsule Collection — Silk & Wool concepts',
-        objectId: taskObjects.find((t) => t.title.toLowerCase().includes('fabric'))?.id,
-        isCompleted: isToday ? true : false,
-      },
-      {
-        id: 't-3',
-        time: '13:30',
-        hour: 13,
-        minute: 30,
-        title: isRTL ? 'ناهار آرام و مطالعه رمان' : 'Lunch & Reading: In Praise of Shadows',
-        category: 'REST',
-        description: isRTL ? 'فصل سوم — زیبایی سایه‌ها و نور' : 'Quiet reflective break with Junichiro Tanizaki',
-      },
-      {
-        id: 't-4',
-        time: '17:00',
-        hour: 17,
-        minute: 0,
-        title: isRTL ? 'پیاده‌روی عصرگاهی و تمرین تمرکز' : 'Evening Walk & Restorative Movement',
-        category: 'LIFE',
-        description: isRTL ? '۴۵ دقیقه پیاده‌روی در هوای پاییزی' : '45 minutes gentle walk, disconnected from devices',
-      },
-      {
-        id: 't-5',
-        time: '20:30',
-        hour: 20,
-        minute: 30,
-        title: isRTL ? 'مرور افکار روز و ثبت خاطرات' : 'Evening Reflections & Memory Capture',
-        category: 'PERSONAL',
-        description: isRTL ? 'ثبت صفای درون و یادداشت‌های روز' : 'Closing the day with calm thoughts in SAFA',
-      },
-    ];
-
-    return baseItems;
-  }, [isToday, isRTL, objects]);
-
-  const getCategoryBadge = (cat: TimelineItem['category']) => {
+  const getCategoryBadge = (cat: TimelineScheduleItem['category']) => {
     switch (cat) {
       case 'STUDIO':
         return {
           label: isRTL ? 'آتلیه' : 'Atelier',
-          className: isDark
-            ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
-            : 'bg-amber-50 text-amber-700 border-amber-200',
+          className: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
         };
       case 'RITUAL':
         return {
           label: isRTL ? 'آیین' : 'Ritual',
-          className: isDark
-            ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
-            : 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          className: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
         };
       case 'REST':
         return {
           label: isRTL ? 'آرامش' : 'Rest',
-          className: isDark
-            ? 'bg-blue-500/10 text-blue-300 border-blue-500/20'
-            : 'bg-blue-50 text-blue-700 border-blue-200',
+          className: 'bg-blue-500/10 text-blue-300 border-blue-500/20',
         };
       case 'PERSONAL':
         return {
           label: isRTL ? 'خاطره' : 'Personal',
-          className: isDark
-            ? 'bg-purple-500/10 text-purple-300 border-purple-500/20'
-            : 'bg-purple-50 text-purple-700 border-purple-200',
+          className: 'bg-purple-500/10 text-purple-300 border-purple-500/20',
         };
       default:
         return {
           label: isRTL ? 'روزمره' : 'Life',
-          className: isDark
-            ? 'bg-white/[0.05] text-zinc-300 border-white/[0.06]'
-            : 'bg-zinc-100 text-zinc-700 border-zinc-200',
+          className: 'bg-white/[0.04] text-zinc-300 border-white/[0.06]',
         };
+    }
+  };
+
+  const handleItemClick = (item: TimelineScheduleItem) => {
+    if (!onSelectObject || !item.objectId) return;
+    const found = objects.find((o) => o.id === item.objectId);
+    if (found) {
+      onSelectObject(found);
     }
   };
 
   return (
     <div className="space-y-3 select-none">
+      {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <h3 className={`text-[11px] font-semibold uppercase tracking-wider ${isDark ? 'text-[#8E8E98]' : 'text-zinc-500'}`}>
-          {isRTL ? 'جریان و برنامه روز' : 'Daily Schedule & Rhythm'}
-        </h3>
+        <div className="flex items-center gap-2">
+          <Clock className="w-3.5 h-3.5 text-zinc-400" />
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-[#92929B]">
+            {isRTL ? 'جریان و برنامه روز' : 'Daily Schedule & Rhythm'}
+          </h3>
+        </div>
+
         {isToday && (
-          <div className="flex items-center gap-1.5 text-[11px] font-medium text-rose-500">
+          <div className="flex items-center gap-1.5 text-[11px] font-medium text-rose-400">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
             </span>
             <span className="font-mono">{currentTimeFormatted}</span>
           </div>
         )}
       </div>
 
-      <div className="relative space-y-2.5">
-        {timelineItems.map((item, index) => {
-          const itemTotalMinutes = item.hour * 60 + item.minute;
-          const currentTotalMinutes = currentHour * 60 + currentMinute;
-          const badge = getCategoryBadge(item.category);
+      {/* Timeline Items or Beautiful Empty State */}
+      {timelineItems.length === 0 ? (
+        /* Graceful Poetic Empty State */
+        <div
+          onClick={onOpenCapture}
+          className="group relative p-5 sm:p-6 rounded-[24px] bg-[#0A0B10] border border-white/[0.025] hover:border-white/[0.05] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_8px_24px_rgba(0,0,0,0.5)] transition-all cursor-pointer flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left rtl:sm:text-right"
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/[0.05] flex items-center justify-center text-zinc-400 group-hover:text-rose-400 transition-colors shrink-0">
+              <Calendar className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-[#EDEDEF] leading-relaxed">
+                {isRTL
+                  ? 'امروز هنوز چیزی در برنامه‌ات ثبت نشده.'
+                  : 'Nothing scheduled for this day yet.'}
+              </p>
+              <p className="text-[11px] text-[#92929B] mt-0.5 font-light">
+                {isRTL
+                  ? 'شاید وقت خوبیه برای اینکه روزت رو خودت بسازی ✦'
+                  : 'A quiet, unhurried space to shape your day ✦'}
+              </p>
+            </div>
+          </div>
 
-          // Check if NOW indicator should be rendered just before this item
-          const showNowBefore =
-            isToday &&
-            index > 0 &&
-            currentTotalMinutes > (timelineItems[index - 1].hour * 60 + timelineItems[index - 1].minute) &&
-            currentTotalMinutes <= itemTotalMinutes;
+          <button
+            type="button"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 border border-white/[0.04] text-xs font-medium shrink-0 transition-transform active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 text-rose-400" />
+            <span>{isRTL ? 'ثبت برنامه' : 'Add Event'}</span>
+          </button>
+        </div>
+      ) : (
+        <div className="relative space-y-2.5">
+          {timelineItems.map((item, index) => {
+            const itemTotalMinutes = item.hour * 60 + item.minute;
+            const currentTotalMinutes = currentHour * 60 + currentMinute;
+            const badge = getCategoryBadge(item.category);
 
-          return (
-            <React.Fragment key={item.id}>
-              {/* Refined NOW Indicator */}
-              {showNowBefore && (
-                <div className="relative flex items-center gap-3 py-1 my-1">
-                  <div className="w-12 text-right rtl:text-left shrink-0">
-                    <span className="text-[9.5px] font-bold text-rose-500 uppercase tracking-widest">
-                      NOW
+            const showNowBefore =
+              isToday &&
+              index > 0 &&
+              currentTotalMinutes >
+                timelineItems[index - 1].hour * 60 + timelineItems[index - 1].minute &&
+              currentTotalMinutes <= itemTotalMinutes;
+
+            return (
+              <React.Fragment key={item.id}>
+                {/* NOW Indicator */}
+                {showNowBefore && (
+                  <div className="relative flex items-center gap-3 py-1 my-1">
+                    <div className="w-12 text-right rtl:text-left shrink-0">
+                      <span className="text-[9.5px] font-bold text-rose-500 uppercase tracking-widest">
+                        NOW
+                      </span>
+                    </div>
+                    <div className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] shrink-0 z-10" />
+                    <div className="flex-1 h-[1px] bg-gradient-to-r from-rose-500/40 via-rose-500/15 to-transparent rtl:bg-gradient-to-l" />
+                  </div>
+                )}
+
+                {/* Timeline Item Card */}
+                <div
+                  onClick={() => handleItemClick(item)}
+                  className={`group relative flex items-start gap-3 sm:gap-3.5 p-3.5 sm:p-4 rounded-[22px] transition-all duration-200 bg-[#0B0C11] border border-white/[0.025] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#12131A] ${
+                    item.objectId ? 'cursor-pointer hover:border-white/[0.06]' : ''
+                  } ${item.isCompleted ? 'opacity-60' : ''}`}
+                >
+                  {/* Time */}
+                  <div className="w-12 pt-0.5 text-right rtl:text-left shrink-0">
+                    <span className="text-xs font-mono font-medium text-[#8E8E98]">
+                      {item.time}
                     </span>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] shrink-0 z-10" />
-                  <div className="flex-1 h-[1px] bg-gradient-to-r from-rose-500/40 via-rose-500/15 to-transparent rtl:bg-gradient-to-l" />
-                </div>
-              )}
 
-              {/* Timeline Item Card */}
-              <div
-                className={`group relative flex items-start gap-3 sm:gap-3.5 p-3.5 sm:p-4 rounded-[20px] transition-all duration-200 ${
-                  isDark
-                    ? 'bg-[#0E0E13] border border-white/[0.025] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#131318]'
-                    : 'bg-white border border-black/[0.035] shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:border-black/[0.06]'
-                } ${item.isCompleted ? 'opacity-60' : ''}`}
-              >
-                {/* Time string */}
-                <div className="w-12 pt-0.5 text-right rtl:text-left shrink-0">
-                  <span className={`text-xs font-mono font-medium ${isDark ? 'text-[#8E8E98]' : 'text-zinc-500'}`}>
-                    {item.time}
-                  </span>
-                </div>
+                  {/* Node icon */}
+                  <div className="pt-0.5 z-10 shrink-0">
+                    {item.isCompleted ? (
+                      <div className="w-4.5 h-4.5 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/25">
+                        <Check className="w-3 h-3 stroke-[2.5]" />
+                      </div>
+                    ) : (
+                      <div className="w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white/20 bg-white/[0.02]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                      </div>
+                    )}
+                  </div>
 
-                {/* Node icon */}
-                <div className="pt-0.5 z-10 shrink-0">
-                  {item.isCompleted ? (
-                    <div className="w-4.5 h-4.5 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/25">
-                      <Check className="w-3 h-3 stroke-[2.5]" />
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span
+                        className={`text-[9px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded-full border ${badge.className}`}
+                      >
+                        {badge.label}
+                      </span>
                     </div>
-                  ) : (
-                    <div className={`w-4.5 h-4.5 rounded-full flex items-center justify-center border ${isDark ? 'border-white/20 bg-white/[0.02]' : 'border-zinc-300 bg-zinc-50'}`}>
-                      <div className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-white/40' : 'bg-zinc-400'}`} />
-                    </div>
-                  )}
-                </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span
-                      className={`text-[9px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded-full border ${badge.className}`}
+                    <h4
+                      className={`text-xs sm:text-sm font-semibold tracking-tight leading-snug text-[#EDEDEF] ${
+                        item.isCompleted ? 'line-through text-zinc-500' : ''
+                      }`}
                     >
-                      {badge.label}
-                    </span>
+                      {item.title}
+                    </h4>
+
+                    {item.description && (
+                      <p className="text-xs mt-0.5 leading-relaxed line-clamp-2 text-[#8E8E98]">
+                        {item.description}
+                      </p>
+                    )}
                   </div>
 
-                  <h4
-                    className={`text-sm font-semibold tracking-tight leading-snug ${
-                      isDark ? 'text-[#EDEDEF]' : 'text-zinc-950'
-                    } ${item.isCompleted ? 'line-through opacity-70' : ''}`}
-                  >
-                    {item.title}
-                  </h4>
-
-                  {item.description && (
-                    <p className={`text-xs mt-0.5 leading-relaxed line-clamp-2 ${isDark ? 'text-[#8E8E98]' : 'text-zinc-500'}`}>
-                      {item.description}
-                    </p>
+                  {item.objectId && (
+                    <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                   )}
                 </div>
-              </div>
-            </React.Fragment>
-          );
-        })}
-      </div>
+              </React.Fragment>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
-
