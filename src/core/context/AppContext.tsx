@@ -1,20 +1,22 @@
 /**
- * SAFA — App Context
- * Global UI navigation, modals, device frame preview, and toasts.
+ * SAFA — App Context (Build 02.0)
+ * Global UI navigation, modals, theme mode (Obsidian Dark / Matte Light), and state.
  */
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ObjectType } from '../types/objects';
 
 export type NavTab = 'HOME' | 'LIFE' | 'CREATE' | 'MEDIA' | 'MORE' | 'INBOX';
 export type LifeSubview = 'TASKS' | 'CALENDAR' | 'REMINDERS' | 'GOALS' | 'HABITS' | 'PROJECTS';
 export type CreateSubview = 'NOTES' | 'IDEAS' | 'WRITING' | 'DRAWING' | 'STUDIO';
 export type MediaSubview = 'PHOTOS' | 'VIDEOS' | 'MUSIC' | 'BOOKS' | 'MOVIES';
+export type ThemeMode = 'dark' | 'light';
+export type QuickChip = 'ALL' | 'DASHBOARD' | 'REMINDERS' | 'PROGRESS';
 
 export interface ToastItem {
   id: string;
   message: string;
-  type?: 'info' | 'success' | 'warning' | 'rose';
+  type?: 'info' | 'success' | 'warning' | 'rose' | 'amber' | 'purple';
   durationMs?: number;
 }
 
@@ -37,8 +39,15 @@ interface AppContextType {
   setIsSettingsOpen: (open: boolean) => void;
   viewMode: 'fluid' | 'iphone-frame';
   setViewMode: (mode: 'fluid' | 'iphone-frame') => void;
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
+  toggleTheme: () => void;
+  activeChip: QuickChip;
+  setActiveChip: (chip: QuickChip) => void;
+  prioritySearch: string;
+  setPrioritySearch: (val: string) => void;
   toasts: ToastItem[];
-  addToast: (message: string, type?: 'info' | 'success' | 'warning' | 'rose') => void;
+  addToast: (message: string, type?: 'info' | 'success' | 'warning' | 'rose' | 'amber' | 'purple') => void;
   removeToast: (id: string) => void;
 }
 
@@ -55,13 +64,51 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'fluid' | 'iphone-frame'>('fluid');
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  
+  // Default to Obsidian Dark permanently locked across the platform
+  const [themeMode, setThemeModeState] = useState<ThemeMode>(() => {
+    const saved = localStorage.getItem('safa_theme_mode');
+    return saved === 'light' ? 'light' : 'dark';
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    if (themeMode === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+      body.classList.add('bg-[#06070A]', 'text-[#EDEDEF]');
+      body.classList.remove('bg-[#F4F4F6]', 'text-[#111113]');
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+      body.classList.add('bg-[#F4F4F6]', 'text-[#111113]');
+      body.classList.remove('bg-[#06070A]', 'text-[#EDEDEF]');
+    }
+  }, [themeMode]);
+
+  const [activeChip, setActiveChip] = useState<QuickChip>('ALL');
+  const [prioritySearch, setPrioritySearch] = useState<string>('');
+
+  const setThemeMode = (mode: ThemeMode) => {
+    setThemeModeState(mode);
+    localStorage.setItem('safa_theme_mode', mode);
+  };
+
+  const toggleTheme = () => {
+    const next = themeMode === 'dark' ? 'light' : 'dark';
+    setThemeMode(next);
+  };
 
   const openCapture = (type?: ObjectType) => {
     setCaptureDefaultType(type || null);
     setIsCaptureOpen(true);
   };
 
-  const addToast = (message: string, type: 'info' | 'success' | 'warning' | 'rose' = 'rose') => {
+  const addToast = (
+    message: string,
+    type: 'info' | 'success' | 'warning' | 'rose' | 'amber' | 'purple' = 'rose'
+  ) => {
     const id = `toast_${Date.now()}_${Math.random()}`;
     const newToast: ToastItem = { id, message, type };
     setToasts((prev) => [...prev, newToast]);
@@ -95,6 +142,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setIsSettingsOpen,
         viewMode,
         setViewMode,
+        themeMode,
+        setThemeMode,
+        toggleTheme,
+        activeChip,
+        setActiveChip,
+        prioritySearch,
+        setPrioritySearch,
         toasts,
         addToast,
         removeToast,

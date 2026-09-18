@@ -1,5 +1,5 @@
 /**
- * SAFA — Life Shell
+ * SAFA — Life Shell (Build 02.0)
  * Calm productivity: Tasks, Calendar rhythm, Reminders, Goals, Habits, and Projects.
  */
 
@@ -23,7 +23,8 @@ import {
 
 export function LifeView() {
   const { objects, setSelectedObject } = useObjects();
-  const { lifeSubview, setLifeSubview, openCapture } = useApp();
+  const { lifeSubview, setLifeSubview, openCapture, themeMode } = useApp();
+  const isDark = themeMode === 'dark';
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'ACTIVE' | 'COMPLETED'>('ACTIVE');
 
   const subviewOptions: SegmentOption<LifeSubview>[] = [
@@ -68,16 +69,16 @@ export function LifeView() {
       {/* Top Header & Subviews Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif-luxury font-medium text-[#1C1917] tracking-tight">
+          <h2 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#111116]'}`}>
             Life & Productivity
           </h2>
-          <p className="text-xs text-[#78716C] mt-0.5">
+          <p className={`text-xs mt-0.5 ${isDark ? 'text-[#8E8E98]' : 'text-[#6E6E78]'}`}>
             Organize tasks, habits, and long-term milestones with calm clarity.
           </p>
         </div>
 
         <Button
-          variant="primary"
+          variant={isDark ? 'white-pill' : 'primary'}
           size="sm"
           onClick={() => openCapture(currentType)}
           icon={<Plus className="w-3.5 h-3.5" />}
@@ -98,16 +99,26 @@ export function LifeView() {
 
       {/* Status Filter for tasks/projects */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 bg-[#F5F2EC] p-1 rounded-full border border-[#E7E2DC]/80">
+        <div
+          className={`flex items-center gap-1.5 p-1 rounded-full transition-all ${
+            isDark
+              ? 'bg-[#0E0E13] border border-white/[0.06] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]'
+              : 'bg-white border border-black/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.04)]'
+          }`}
+        >
           {(['ACTIVE', 'COMPLETED', 'ALL'] as const).map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setFilterStatus(s)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 filterStatus === s
-                  ? 'bg-white text-[#1C1917] shadow-2xs'
-                  : 'text-[#78716C] hover:text-[#1C1917]'
+                  ? isDark
+                    ? 'bg-white text-black shadow-xs'
+                    : 'bg-[#111116] text-white shadow-xs'
+                  : isDark
+                  ? 'text-[#8E8E98] hover:text-white'
+                  : 'text-[#6E6E78] hover:text-[#111116]'
               }`}
             >
               {s.charAt(0) + s.slice(1).toLowerCase()}
@@ -115,7 +126,7 @@ export function LifeView() {
           ))}
         </div>
 
-        <span className="text-xs text-[#8C827D]">
+        <span className={`text-xs font-mono ${isDark ? 'text-[#5C5C68]' : 'text-[#8E8E98]'}`}>
           {filteredObjects.length} {filteredObjects.length === 1 ? 'item' : 'items'}
         </span>
       </div>
@@ -129,7 +140,7 @@ export function LifeView() {
           onAction={() => openCapture(currentType)}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {filteredObjects.map((obj) => (
             <ObjectCard
               key={obj.id}

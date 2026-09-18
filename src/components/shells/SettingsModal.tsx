@@ -1,5 +1,5 @@
 /**
- * SAFA — Settings, Profile, SLO & Data Ownership Modal
+ * SAFA — Settings, Profile, SLO & Data Ownership Modal (Build 02.0)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -10,24 +10,21 @@ import { useApp } from '../../core/context/AppContext';
 import { api } from '../../core/services/apiClient';
 import {
   User,
-  Globe,
   HeartHandshake,
   Download,
   ShieldCheck,
   Sparkles,
   LogOut,
-  Palette,
-  Check,
 } from 'lucide-react';
 
 export function SettingsModal() {
-  const { user, updateProfile, logout, isRTL, toggleRTL, language, setLanguage } = useAuth();
+  const { user, updateProfile, logout, isRTL, language, setLanguage } = useAuth();
   const { isSettingsOpen, setIsSettingsOpen, addToast } = useApp();
 
   const [name, setName] = useState('');
   const [persianName, setPersianName] = useState('');
   const [bio, setBio] = useState('');
-  const [theme, setTheme] = useState('warm-paper');
+  const [theme, setTheme] = useState('obsidian-dark');
   const [activeTab, setActiveTab] = useState<'PROFILE' | 'SLO' | 'DATA' | 'AI'>('PROFILE');
   const [sloConfig, setSloConfig] = useState<any>(null);
 
@@ -36,7 +33,7 @@ export function SettingsModal() {
       setName(user.profile.name || '');
       setPersianName(user.profile.persianName || '');
       setBio(user.profile.bio || '');
-      setTheme(user.profile.themePreference || 'warm-paper');
+      setTheme(user.profile.themePreference || 'obsidian-dark');
     }
     if (isSettingsOpen) {
       api.getSLO().then((res) => setSloConfig(res.slo)).catch(() => {});
@@ -69,7 +66,7 @@ export function SettingsModal() {
     try {
       const res = await api.updateSLO({ defaultAccess: nextAccess });
       setSloConfig(res.slo);
-      addToast(`SLO Access updated: ${nextAccess}`, 'rose');
+      addToast(`SLO Access updated: ${nextAccess}`, 'purple');
     } catch (err) {}
   };
 
@@ -83,7 +80,7 @@ export function SettingsModal() {
     >
       <div className="space-y-4">
         {/* Sub-tabs */}
-        <div className="flex items-center gap-1 border-b border-[#F0ECE8] pb-2 overflow-x-auto">
+        <div className="flex items-center gap-1 border-b border-white/[0.06] pb-2 overflow-x-auto no-scrollbar">
           {[
             { id: 'PROFILE', label: 'Profile & Look', icon: <User className="w-3.5 h-3.5" /> },
             { id: 'SLO', label: 'SLO Connection', icon: <HeartHandshake className="w-3.5 h-3.5" /> },
@@ -93,10 +90,10 @@ export function SettingsModal() {
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id as any)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer select-none ${
                 activeTab === t.id
-                  ? 'bg-[#1C1917] text-white'
-                  : 'text-[#78716C] hover:bg-[#F5F2EC] hover:text-[#1C1917]'
+                  ? 'bg-white text-[#09090B] shadow-[0_2px_10px_rgba(255,255,255,0.25)]'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
               {t.icon}
@@ -109,49 +106,51 @@ export function SettingsModal() {
         {activeTab === 'PROFILE' && (
           <div className="space-y-3.5 text-xs">
             <div>
-              <label className="block text-[#78716C] font-medium mb-1">Name</label>
+              <label className="block text-zinc-400 font-bold mb-1">Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-white border border-[#E7E0D8] rounded-xl px-3 py-2 text-sm text-[#1C1917]"
+                className="w-full bg-[#18181D] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white font-semibold focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="block text-[#78716C] font-medium mb-1">Persian Name (نام به فارسی)</label>
+              <label className="block text-zinc-400 font-bold mb-1">Persian Name (نام به فارسی)</label>
               <input
                 type="text"
                 dir="rtl"
                 value={persianName}
                 onChange={(e) => setPersianName(e.target.value)}
-                className="w-full bg-white border border-[#E7E0D8] rounded-xl px-3 py-2 text-sm text-[#1C1917] font-persian-luxury"
+                className="w-full bg-[#18181D] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white font-persian-luxury focus:outline-none focus:border-white/30"
                 placeholder="صفا"
               />
             </div>
 
             <div>
-              <label className="block text-[#78716C] font-medium mb-1">Personal Intent / Bio</label>
+              <label className="block text-zinc-400 font-bold mb-1">Personal Intent / Bio</label>
               <textarea
                 rows={2}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                className="w-full bg-white border border-[#E7E0D8] rounded-xl p-3 text-xs text-[#1C1917]"
+                className="w-full bg-[#18181D] border border-white/[0.08] rounded-xl p-3 text-xs text-zinc-200 focus:outline-none focus:border-white/30"
               />
             </div>
 
             {/* Language and RTL */}
-            <div className="p-3 bg-[#F8F5EE] rounded-xl border border-[#EAE3D6] flex items-center justify-between">
+            <div className="p-3.5 bg-[#18181D] rounded-xl border border-white/[0.08] flex items-center justify-between">
               <div>
-                <span className="font-semibold text-stone-800 block">Layout Direction & Language</span>
-                <span className="text-[#8C827D]">English LTR / فارسی راست‌به‌چپ</span>
+                <span className="font-bold text-white block">Layout Direction & Language</span>
+                <span className="text-zinc-400 text-[11px]">English LTR / فارسی راست‌به‌چپ</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setLanguage('en')}
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
-                    language === 'en' ? 'bg-[#1C1917] text-white' : 'bg-white text-stone-700'
+                  className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                    language === 'en'
+                      ? 'bg-white text-[#09090B] border-transparent shadow-xs'
+                      : 'bg-[#222228] text-zinc-400 border-white/[0.06]'
                   }`}
                 >
                   EN (LTR)
@@ -159,8 +158,10 @@ export function SettingsModal() {
                 <button
                   type="button"
                   onClick={() => setLanguage('fa')}
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium border font-persian-luxury ${
-                    language === 'fa' ? 'bg-[#1C1917] text-white' : 'bg-white text-stone-700'
+                  className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer font-persian-luxury ${
+                    language === 'fa'
+                      ? 'bg-white text-[#09090B] border-transparent shadow-xs'
+                      : 'bg-[#222228] text-zinc-400 border-white/[0.06]'
                   }`}
                 >
                   فارسی (RTL)
@@ -173,30 +174,30 @@ export function SettingsModal() {
         {/* SLO TAB */}
         {activeTab === 'SLO' && (
           <div className="space-y-3 text-xs">
-            <div className="p-4 bg-[#FAF6F3] rounded-2xl border border-[#E8D5CE] space-y-2">
+            <div className="p-4 bg-[#18181D] rounded-2xl border border-white/[0.08] space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#E8D5CE] flex items-center justify-center text-[#6E4B3E]">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-purple-950/40 border border-purple-500/30 flex items-center justify-center text-purple-300">
                     <HeartHandshake className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-stone-800">Special Connection (SLO)</h4>
-                    <p className="text-[11px] text-[#8C827D]">
+                    <h4 className="font-bold text-white">Special Connection (SLO)</h4>
+                    <p className="text-[11px] text-zinc-400">
                       Private by default. SLO has NO access unless you explicitly grant it per object.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-[#E8D5CE]/60 flex items-center justify-between">
-                <span className="text-stone-700 font-medium">Default Permission:</span>
+              <div className="pt-2.5 border-t border-white/[0.06] flex items-center justify-between">
+                <span className="text-zinc-300 font-semibold">Default Permission:</span>
                 <button
                   type="button"
                   onClick={handleToggleSLOAccess}
-                  className={`px-3 py-1 rounded-full font-semibold ${
+                  className={`px-3 py-1 rounded-full font-bold text-xs transition-colors ${
                     sloConfig?.defaultAccess === 'NO_ACCESS'
-                      ? 'bg-stone-200 text-stone-800'
-                      : 'bg-emerald-100 text-emerald-800'
+                      ? 'bg-[#222228] text-zinc-300 border border-white/[0.08]'
+                      : 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30'
                   }`}
                 >
                   {sloConfig?.defaultAccess || 'NO_ACCESS'}
@@ -204,7 +205,7 @@ export function SettingsModal() {
               </div>
             </div>
 
-            <p className="text-[#8C827D] leading-relaxed">
+            <p className="text-zinc-400 leading-relaxed text-[11px]">
               When viewing any Photo, Memory, or Project, you can toggle "Allow SLO Access" to share that specific moment with complete authorization control.
             </p>
           </div>
@@ -213,19 +214,19 @@ export function SettingsModal() {
         {/* DATA OWNERSHIP TAB */}
         {activeTab === 'DATA' && (
           <div className="space-y-3 text-xs">
-            <div className="p-4 bg-white rounded-2xl border border-[#E7E0D8] space-y-3">
+            <div className="p-4 bg-[#18181D] rounded-2xl border border-white/[0.08] space-y-3">
               <div className="flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-emerald-600 mt-0.5" />
+                <ShieldCheck className="w-5 h-5 text-emerald-400 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-stone-900">Total Data Sovereignty</h4>
-                  <p className="text-[#78716C] mt-0.5 leading-relaxed">
+                  <h4 className="font-bold text-white">Total Data Sovereignty</h4>
+                  <p className="text-zinc-400 mt-0.5 leading-relaxed">
                     All your thoughts, tasks, memories, and graph connections belong exclusively to you. You can export a full, unencrypted JSON backup of the universal object database at any time.
                   </p>
                 </div>
               </div>
 
               <Button
-                variant="rose"
+                variant="white-pill"
                 size="sm"
                 onClick={handleExportData}
                 icon={<Download className="w-3.5 h-3.5" />}
@@ -239,13 +240,13 @@ export function SettingsModal() {
         {/* AI TAB */}
         {activeTab === 'AI' && (
           <div className="space-y-3 text-xs">
-            <div className="p-4 bg-[#F8F5EE] rounded-2xl border border-[#EAE3D6] space-y-2.5">
-              <div className="flex items-center gap-2 font-semibold text-stone-900">
-                <Sparkles className="w-4 h-4 text-[#C5A880]" />
+            <div className="p-4 bg-[#18181D] rounded-2xl border border-white/[0.08] space-y-2.5">
+              <div className="flex items-center gap-2 font-bold text-white">
+                <Sparkles className="w-4 h-4 text-purple-400" />
                 <span>SAFA Intelligence Architecture</span>
               </div>
-              <p className="text-[#78716C] leading-relaxed">
-                • Model: <span className="font-mono text-stone-800">gemini-3.8-flash</span> via server-side abstraction.
+              <p className="text-zinc-400 leading-relaxed">
+                • Model: <span className="font-mono text-purple-300">gemini-3.8-flash</span> via server-side abstraction.
                 <br />• Principle: AI suggests; user controls. No silent mutations.
                 <br />• Capabilities: Multilingual understanding (English & Persian), entity classification, tag generation, relationship suggestions.
               </p>
@@ -254,8 +255,8 @@ export function SettingsModal() {
         )}
 
         {/* Footer Actions */}
-        <div className="pt-3 border-t border-[#F0ECE8] flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={logout} className="text-red-600 hover:bg-red-50">
+        <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between">
+          <Button variant="ghost" size="sm" onClick={logout} className="text-rose-400 hover:bg-rose-500/10">
             <LogOut className="w-3.5 h-3.5 mr-1.5" />
             Sign Out
           </Button>
@@ -265,7 +266,7 @@ export function SettingsModal() {
               Close
             </Button>
             {activeTab === 'PROFILE' && (
-              <Button variant="primary" size="sm" onClick={handleSaveProfile}>
+              <Button variant="white-pill" size="sm" onClick={handleSaveProfile}>
                 Save Preferences
               </Button>
             )}

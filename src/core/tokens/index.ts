@@ -1,69 +1,87 @@
 /**
- * SAFA — Centralized Design Token System
- * Minimal Luxury, Soft Rose & Warm Gold Accents, Refined Neutrality.
+ * SAFA — Cutting-Edge Obsidian & Tactile Design Tokens (Build 02.0)
+ * Inspired by Rituraj Design, Lumina Journey, and Next-Gen iOS 18+ Aesthetics.
+ * Pixel-perfect obsidian depths, illuminated progress meters, micro-hairlines,
+ * and high-contrast tactile elements.
  */
 
 export const tokens = {
-  colors: {
+  // Obsidian Dark Theme Tokens (Default & Primary)
+  dark: {
     canvas: {
-      primary: '#FAF8F5',      // Warm white / fine ivory
-      secondary: '#F5F2EC',    // Soft warm secondary surface
-      card: '#FFFFFF',         // Pure clean card
-      glass: 'rgba(255, 255, 255, 0.72)',
-      glassBorder: 'rgba(235, 226, 220, 0.8)',
-      dark: '#1C1917',
+      base: '#09090B',            // Deepest obsidian backdrop
+      surface: '#111113',         // Primary container surface
+      card: '#161619',            // Elevated interactive card
+      cardHover: '#1B1B1F',       // Hover card state
+      cardActive: '#222227',      // Pressed card state
+      glass: 'rgba(18, 18, 22, 0.82)', // Translucent frosted dock
+      insightBg: 'linear-gradient(135deg, rgba(38, 18, 54, 0.85) 0%, rgba(22, 16, 32, 0.95) 100%)', // Lumina purple
+      insightBorder: 'rgba(168, 85, 247, 0.28)',
+      highlightInset: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.08)',
     },
     text: {
-      primary: '#1C1917',      // Deep charcoal / stone-900
-      secondary: '#57534E',    // Warm stone-600
-      muted: '#8C827D',        // Soft stone-400
-      subtle: '#A8A29E',       // Light stone-400
-      inverted: '#FAF8F5',
-    },
-    accent: {
-      rose: '#E8D5CE',         // Soft feminine rose
-      roseLight: '#F7EFEA',    // Very subtle blush
-      roseDark: '#B28779',     // Deep antique rose
-      gold: '#C5A880',         // Refined subtle warm gold
-      goldLight: '#F9F6F0',    // Pale gold wash
-      charcoal: '#292524',     // Dark accent
-      success: '#4A7C59',      // Calm sage green
-      warning: '#C88D3D',      // Warm amber
-      info: '#647D8F',         // Slate blue
+      primary: '#F4F4F5',         // Crisp bright white
+      secondary: '#A1A1AA',       // Clean silver neutral
+      muted: '#71717A',           // Subtle zinc
+      subtle: '#52525B',          // Dark caption
+      accentYellow: '#FACC15',    // Rituraj 79% complete amber/gold
+      accentPurple: '#C084FC',    // Lumina insight violet
+      accentGreen: '#4ADE80',     // Emerald completion tick
+      accentRed: '#F87171',       // Red dot accent
     },
     border: {
-      subtle: '#F0ECE8',
-      light: '#E7E2DC',
-      medium: '#D6CEC6',
-      focus: '#C5A880',
+      subtle: 'rgba(255, 255, 255, 0.06)',
+      medium: 'rgba(255, 255, 255, 0.10)',
+      strong: 'rgba(255, 255, 255, 0.16)',
+      active: '#FFFFFF',
     },
   },
-  typography: {
-    fontFamily: {
-      sans: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      serif: "'Cormorant Garamond', Georgia, serif",
-      persian: "'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+
+  // Pure Matte Light Theme Tokens (From IMG_7865)
+  light: {
+    canvas: {
+      base: '#F4F4F6',
+      surface: '#FFFFFF',
+      card: '#FFFFFF',
+      cardHover: '#F9F9FB',
+      cardActive: '#ECECEF',
+      glass: 'rgba(255, 255, 255, 0.88)',
+      insightBg: 'linear-gradient(135deg, #F3E8FF 0%, #FAF5FF 100%)',
+      insightBorder: 'rgba(168, 85, 247, 0.25)',
+      highlightInset: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.9)',
+    },
+    text: {
+      primary: '#111113',
+      secondary: '#52525B',
+      muted: '#8A8A93',
+      subtle: '#A1A1AA',
+      accentYellow: '#CA8A04',
+      accentPurple: '#9333EA',
+      accentGreen: '#16A34A',
+      accentRed: '#EF4444',
+    },
+    border: {
+      subtle: 'rgba(0, 0, 0, 0.05)',
+      medium: 'rgba(0, 0, 0, 0.08)',
+      strong: 'rgba(0, 0, 0, 0.14)',
+      active: '#111113',
     },
   },
+
+  // Radius Tokens (Consistent iOS 18+ mathematical curves)
   radius: {
-    xs: '4px',
-    sm: '8px',
-    md: '12px',
-    lg: '16px',
-    xl: '20px',
-    '2xl': '24px',
-    full: '9999px',
+    pill: '9999px',
+    sheet: '32px',
+    cardLg: '24px',
+    cardMd: '20px',
+    cardSm: '16px',
+    button: '9999px',
+    iconCircle: '9999px',
   },
-  shadows: {
-    subtle: '0 4px 20px -2px rgba(44, 38, 35, 0.04), 0 2px 6px -1px rgba(44, 38, 35, 0.02)',
-    elevated: '0 12px 32px -4px rgba(44, 38, 35, 0.07), 0 4px 12px -2px rgba(44, 38, 35, 0.03)',
-    floating: '0 20px 45px -8px rgba(44, 38, 35, 0.12), 0 6px 16px -3px rgba(44, 38, 35, 0.04)',
-  },
-  motion: {
-    springFast: { type: 'spring', stiffness: 400, damping: 30 },
-    springSmooth: { type: 'spring', stiffness: 300, damping: 25 },
-    easeOut: [0.16, 1, 0.3, 1],
+
+  // Motion Transitions
+  spring: {
+    snappy: { type: 'spring', stiffness: 450, damping: 30 },
+    gentle: { type: 'spring', stiffness: 300, damping: 25 },
   },
 };
-
-export default tokens;

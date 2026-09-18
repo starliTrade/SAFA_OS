@@ -1,5 +1,5 @@
 /**
- * SAFA — Universal Capture Shell
+ * SAFA — Universal Capture Shell (Build 02.0)
  * "Put anything here" — Fast capture with server-side AI extraction & structured object validation.
  */
 
@@ -10,6 +10,7 @@ import { Tag } from '../ui/Button';
 import { ObjectType, ObjectStatus, ObjectSource } from '../../core/types/objects';
 import { useObjects } from '../../core/context/ObjectContext';
 import { useApp } from '../../core/context/AppContext';
+import { useAuth } from '../../core/context/AuthContext';
 import { api } from '../../core/services/apiClient';
 import { AIExtractResult } from '../../core/types/ai';
 import {
@@ -17,17 +18,15 @@ import {
   CheckSquare,
   FileText,
   Lightbulb,
-  Image as ImageIcon,
-  Paperclip,
-  Mic,
-  Tag as TagIcon,
   ArrowRight,
   Loader2,
+  Heart,
 } from 'lucide-react';
 
 export function UniversalCaptureModal() {
   const { isCaptureOpen, setIsCaptureOpen, captureDefaultType, addToast } = useApp();
   const { createObject } = useObjects();
+  const { isRTL } = useAuth();
 
   const [rawText, setRawText] = useState('');
   const [selectedType, setSelectedType] = useState<ObjectType>(ObjectType.NOTE);
@@ -64,7 +63,7 @@ export function UniversalCaptureModal() {
         if (res.extraction.suggestedTags?.length) {
           setTags(Array.from(new Set([...tags, ...res.extraction.suggestedTags])));
         }
-        addToast('SAFA AI analyzed your capture', 'rose');
+        addToast(isRTL ? 'هوش مصنوعی صفا یادداشت را تحلیل کرد' : 'SAFA AI analyzed your capture', 'purple');
       }
     } catch (err: any) {
       addToast(err.message || 'AI analysis unavailable', 'warning');
@@ -89,53 +88,52 @@ export function UniversalCaptureModal() {
   };
 
   const handleSave = async () => {
-    if (!rawText.trim() && !aiResult?.cleanTitle) {
-      addToast('Please enter something to capture', 'warning');
-      return;
-    }
-
-    const title = aiResult?.cleanTitle || rawText.split('\n')[0].slice(0, 80);
-    const description = aiResult?.cleanDescription || (rawText.includes('\n') ? rawText.slice(title.length).trim() : '');
+    if (!rawText.trim()) return;
 
     try {
+      const title = aiResult?.cleanTitle || rawText.trim().split('\n')[0].slice(0, 80);
+      const description = aiResult?.cleanDescription || (rawText.trim().split('\n').length > 1 ? rawText.trim() : '');
+
       await createObject({
         type: selectedType,
-        title,
-        description: description || undefined,
         status: destination === 'INBOX' ? ObjectStatus.INBOX : ObjectStatus.ACTIVE,
-        source: ObjectSource.QUICK_CAPTURE,
-        tags,
+        title,
+        description,
+        source: ObjectSource.MANUAL,
+        tags: tags.length ? tags : ['quick-capture'],
         metadata: {
-          capturedAt: new Date().toISOString(),
-          aiExtracted: !!aiResult,
-          priority: aiResult?.priority || 'medium',
-          dueDate: aiResult?.dueDate,
+          capturedVia: 'universal-capture-modal',
+          rawPrompt: rawText,
+          aiConfidence: aiResult?.confidence,
         },
       });
 
       addToast(
-        destination === 'INBOX' ? 'Saved to Inbox for organization' : 'Created successfully',
+        isRTL
+          ? 'شیء جدید با موفقیت ثبت شد'
+          : `Captured to ${destination === 'INBOX' ? 'Universal Inbox' : 'Active Workspace'}`,
         'success'
       );
+
       setIsCaptureOpen(false);
     } catch (err: any) {
-      addToast(err.message || 'Failed to capture', 'warning');
+      addToast(err.message || 'Failed to capture object', 'warning');
     }
   };
 
   const quickTypes = [
-    { type: ObjectType.NOTE, label: 'Note', icon: <FileText className="w-3.5 h-3.5" /> },
-    { type: ObjectType.TASK, label: 'Task', icon: <CheckSquare className="w-3.5 h-3.5" /> },
-    { type: ObjectType.IDEA, label: 'Idea', icon: <Lightbulb className="w-3.5 h-3.5" /> },
-    { type: ObjectType.MEMORY, label: 'Memory', icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { type: ObjectType.TASK, label: isRTL ? 'وظیفه' : 'Task', icon: <CheckSquare className="w-3.5 h-3.5" /> },
+    { type: ObjectType.NOTE, label: isRTL ? 'یادداشت' : 'Note', icon: <FileText className="w-3.5 h-3.5" /> },
+    { type: ObjectType.IDEA, label: isRTL ? 'ایده' : 'Idea', icon: <Lightbulb className="w-3.5 h-3.5" /> },
+    { type: ObjectType.MEMORY, label: isRTL ? 'خاطره' : 'Memory', icon: <Heart className="w-3.5 h-3.5" /> },
   ];
 
   return (
     <Modal
       isOpen={isCaptureOpen}
       onClose={() => setIsCaptureOpen(false)}
-      title="Universal Capture"
-      subtitle="Put anything here — thoughts, tasks, ideas, inspiration"
+      title={isRTL ? 'ثبت سریع صفا' : 'Universal Fast Capture'}
+      subtitle={isRTL ? 'هر فکری، وظیفه‌ای یا الهامی را سریع بنویسید' : 'Put anything here — thoughts, tasks, ideas, inspiration'}
       maxWidth="lg"
     >
       <div className="space-y-4">
@@ -146,27 +144,31 @@ export function UniversalCaptureModal() {
             rows={4}
             value={rawText}
             onChange={(e) => setRawText(e.target.value)}
-            placeholder="What's on your mind? (e.g. 'Review silk fabric swatches by tomorrow #design' or 'Idea: Ceramic vase collection')"
-            className="w-full bg-white border border-[#E7E0D8] rounded-2xl p-4 text-sm text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:border-[#C5A880] focus:ring-2 focus:ring-[#C5A880]/15 resize-none transition-all shadow-xs"
+            placeholder={
+              isRTL
+                ? 'چه فکری در ذهن دارید؟ (مثال: بررسی پارچه‌های ابریشمی برای کلکسیون فردا #طراحی)'
+                : "What's on your mind? (e.g. 'Review raw silk fabric swatches by tomorrow #design')"
+            }
+            className="w-full bg-[#18181D] border border-white/[0.08] rounded-2xl p-4 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 resize-none transition-all shadow-inner"
           />
 
           {/* AI Understand Trigger inside textarea box */}
           {rawText.trim().length > 5 && (
             <div className="absolute bottom-3 right-3">
               <Button
-                variant="rose"
-                size="sm"
+                variant="dark-pill"
+                size="xs"
                 onClick={handleAiUnderstand}
                 disabled={isExtracting}
                 icon={
                   isExtracting ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <Loader2 className="w-3 h-3 animate-spin" />
                   ) : (
-                    <Sparkles className="w-3.5 h-3.5 text-[#8C5D50]" />
+                    <Sparkles className="w-3 h-3 text-purple-400" />
                   )
                 }
               >
-                {isExtracting ? 'Understanding...' : 'AI Understand'}
+                {isExtracting ? (isRTL ? 'تحلیل...' : 'Analyzing...') : (isRTL ? 'تحلیل هوشمند' : 'AI Understand')}
               </Button>
             </div>
           )}
@@ -174,22 +176,22 @@ export function UniversalCaptureModal() {
 
         {/* AI Extraction Preview Card if parsed */}
         {aiResult && (
-          <div className="p-3.5 rounded-2xl bg-[#FAF6F3] border border-[#E8D5CE] text-xs space-y-2">
-            <div className="flex items-center justify-between text-[#8C5D50] font-medium">
+          <div className="p-3.5 rounded-2xl bg-purple-950/25 border border-purple-500/30 text-xs space-y-2">
+            <div className="flex items-center justify-between text-purple-300 font-semibold">
               <span className="flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                AI Suggested Classification
+                {isRTL ? 'پیشنهاد هوش مصنوعی صفا' : 'AI Suggested Classification'}
               </span>
-              <span className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#E8D5CE]">
-                {Math.round(aiResult.confidence * 100)}% confidence
+              <span className="text-[10px] bg-purple-900/50 px-2 py-0.5 rounded-full border border-purple-500/40 text-purple-200">
+                {Math.round(aiResult.confidence * 100)}%
               </span>
             </div>
-            <div className="text-stone-800">
-              <span className="font-semibold">Title:</span> {aiResult.cleanTitle}
+            <div className="text-white">
+              <span className="font-bold text-zinc-400">{isRTL ? 'عنوان:' : 'Title:'}</span> {aiResult.cleanTitle}
             </div>
             {aiResult.cleanDescription && (
-              <div className="text-stone-600">
-                <span className="font-semibold">Context:</span> {aiResult.cleanDescription}
+              <div className="text-zinc-300">
+                <span className="font-bold text-zinc-400">{isRTL ? 'توضیحات:' : 'Context:'}</span> {aiResult.cleanDescription}
               </div>
             )}
           </div>
@@ -197,10 +199,10 @@ export function UniversalCaptureModal() {
 
         {/* Quick Type Selection */}
         <div>
-          <label className="block text-[11px] font-medium text-[#78716C] uppercase tracking-wider mb-2">
-            Object Type
+          <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+            {isRTL ? 'نوع شیء' : 'Object Type'}
           </label>
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             {quickTypes.map((t) => {
               const isSelected = selectedType === t.type;
               return (
@@ -208,10 +210,10 @@ export function UniversalCaptureModal() {
                   key={t.type}
                   type="button"
                   onClick={() => setSelectedType(t.type)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 border transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer select-none active:scale-95 ${
                     isSelected
-                      ? 'bg-[#1C1917] text-[#FAF8F5] border-[#1C1917]'
-                      : 'bg-[#F7F4EE] text-[#57534E] border-[#E7E0D8] hover:bg-[#EFEAE2]'
+                      ? 'bg-white text-[#09090B] shadow-[0_2px_10px_rgba(255,255,255,0.25)]'
+                      : 'bg-[#18181D] text-zinc-400 border border-white/[0.08] hover:text-white'
                   }`}
                 >
                   {t.icon}
@@ -224,12 +226,12 @@ export function UniversalCaptureModal() {
 
         {/* Tags input */}
         <div>
-          <label className="block text-[11px] font-medium text-[#78716C] uppercase tracking-wider mb-2">
-            Tags & Context
+          <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+            {isRTL ? 'برچسب‌ها و زمینه' : 'Tags & Context'}
           </label>
-          <div className="flex items-center gap-2 flex-wrap mb-2">
+          <div className="flex items-center gap-1.5 flex-wrap mb-2">
             {tags.map((t) => (
-              <Tag key={t} label={t} color="rose" onRemove={() => handleRemoveTag(t)} />
+              <Tag key={t} label={t} variant="purple" onRemove={() => handleRemoveTag(t)} />
             ))}
           </div>
           <input
@@ -237,39 +239,41 @@ export function UniversalCaptureModal() {
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleAddTag}
-            placeholder="Type tag and press Enter..."
-            className="w-full bg-white border border-[#E7E0D8] rounded-xl px-3 py-2 text-xs text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:border-[#C5A880]"
+            placeholder={isRTL ? 'برچسب را تایپ کنید و Enter بزنید...' : 'Type tag and press Enter...'}
+            className="w-full bg-[#18181D] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30"
           />
         </div>
 
         {/* Destination Option */}
-        <div className="pt-2 flex items-center justify-between border-t border-[#F0ECE8]">
-          <div className="flex items-center gap-2 text-xs text-[#78716C]">
-            <span className="font-medium">Destination:</span>
+        <div className="pt-3 flex items-center justify-between border-t border-white/[0.06]">
+          <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <span className="font-semibold">{isRTL ? 'مقصد:' : 'Destination:'}</span>
             <button
               type="button"
               onClick={() => setDestination(destination === 'INBOX' ? 'ACTIVE' : 'INBOX')}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+              className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
                 destination === 'INBOX'
-                  ? 'bg-[#F5EBE6] text-[#8C5D50] border-[#E8D5CE]'
-                  : 'bg-stone-100 text-stone-700 border-stone-200'
+                  ? 'bg-purple-950/40 text-purple-300 border-purple-500/30'
+                  : 'bg-emerald-950/40 text-emerald-300 border-emerald-500/30'
               }`}
             >
-              {destination === 'INBOX' ? 'Raw Inbox (Triage Later)' : 'Direct to Active'}
+              {destination === 'INBOX'
+                ? (isRTL ? 'صندوق ورودی (بررسی بعداً)' : 'Raw Inbox')
+                : (isRTL ? 'مستقیم به فعال' : 'Direct to Active')}
             </button>
           </div>
 
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => setIsCaptureOpen(false)}>
-              Cancel
+              {isRTL ? 'انصراف' : 'Cancel'}
             </Button>
             <Button
-              variant="primary"
+              variant="white-pill"
               size="sm"
               onClick={handleSave}
               icon={<ArrowRight className="w-3.5 h-3.5" />}
             >
-              Capture
+              {isRTL ? 'ثبت' : 'Capture'}
             </Button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 /**
- * SAFA — Global Search & Command Foundation
+ * SAFA — Global Search & Command Foundation (Build 02.0)
  * Fast multi-type search across the Universal Object Graph.
  */
 
@@ -9,18 +9,7 @@ import { SearchBar } from '../ui/Input';
 import { ObjectType, BaseObject } from '../../core/types/objects';
 import { useObjects } from '../../core/context/ObjectContext';
 import { useApp } from '../../core/context/AppContext';
-import { api } from '../../core/services/apiClient';
-import { Tag } from '../ui/Button';
-import {
-  Search,
-  ArrowRight,
-  FileText,
-  CheckSquare,
-  Lightbulb,
-  Sparkles,
-  BookOpen,
-  Folder,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export function GlobalSearchModal() {
   const { isSearchOpen, setIsSearchOpen } = useApp();
@@ -92,10 +81,10 @@ export function GlobalSearchModal() {
                 key={f.value}
                 type="button"
                 onClick={() => setSelectedType(f.value)}
-                className={`px-3 py-1 text-xs rounded-full border transition-all whitespace-nowrap cursor-pointer ${
+                className={`px-3 py-1 text-xs rounded-full transition-all whitespace-nowrap cursor-pointer select-none ${
                   isSelected
-                    ? 'bg-[#1C1917] text-[#FAF8F5] border-[#1C1917]'
-                    : 'bg-[#F7F4EE] text-[#78716C] border-[#E7E0D8] hover:bg-[#EFEAE2]'
+                    ? 'bg-white text-[#09090B] font-bold shadow-[0_2px_10px_rgba(255,255,255,0.25)]'
+                    : 'bg-[#18181D] text-zinc-400 border border-white/[0.08] hover:text-white'
                 }`}
               >
                 {f.label}
@@ -105,9 +94,9 @@ export function GlobalSearchModal() {
         </div>
 
         {/* Results List */}
-        <div className="max-h-72 overflow-y-auto space-y-2 pt-2 border-t border-[#F0ECE8]">
+        <div className="max-h-72 overflow-y-auto space-y-2 pt-2 border-t border-white/[0.06]">
           {filteredResults.length === 0 ? (
-            <div className="py-8 text-center text-xs text-[#8C827D]">
+            <div className="py-8 text-center text-xs text-zinc-500 font-mono">
               No objects found matching "{query}"
             </div>
           ) : (
@@ -115,25 +104,25 @@ export function GlobalSearchModal() {
               <div
                 key={obj.id}
                 onClick={() => handleSelectObject(obj)}
-                className="p-3 rounded-xl bg-white border border-[#F0ECE8] hover:border-[#C5A880]/60 hover:bg-[#FAF8F5] transition-all cursor-pointer flex items-center justify-between gap-3 group"
+                className="p-3.5 rounded-xl bg-[#18181D] border border-white/[0.08] hover:border-white/20 hover:bg-[#202026] transition-all cursor-pointer flex items-center justify-between gap-3 group"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8C827D]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
                       {obj.type}
                     </span>
                     {obj.tags?.slice(0, 2).map((t) => (
-                      <span key={t} className="text-[10px] text-[#A8A29E]">
+                      <span key={t} className="text-[10px] text-zinc-500 font-mono">
                         #{t}
                       </span>
                     ))}
                   </div>
-                  <h4 className="text-sm font-medium text-[#1C1917] truncate">{obj.title}</h4>
+                  <h4 className="text-sm font-semibold text-white truncate">{obj.title}</h4>
                   {obj.description && (
-                    <p className="text-xs text-[#78716C] truncate mt-0.5">{obj.description}</p>
+                    <p className="text-xs text-zinc-400 truncate mt-0.5">{obj.description}</p>
                   )}
                 </div>
-                <ArrowRight className="w-4 h-4 text-[#8C827D] group-hover:text-[#1C1917] group-hover:translate-x-0.5 transition-all shrink-0" />
+                <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
               </div>
             ))
           )}

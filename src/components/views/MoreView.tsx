@@ -1,5 +1,5 @@
 /**
- * SAFA — More Shell
+ * SAFA — More Shell (Build 02.0)
  * Memories, Journal Reflection, Connected Graph Map, SLO Hub, and Data Sovereignty.
  */
 
@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { useObjects } from '../../core/context/ObjectContext';
 import { useApp } from '../../core/context/AppContext';
 import { useAuth } from '../../core/context/AuthContext';
-import { ObjectType, ObjectStatus } from '../../core/types/objects';
+import { ObjectType } from '../../core/types/objects';
 import { ObjectCard } from '../ui/ObjectCard';
 import { Button } from '../ui/Button';
 import { SegmentedControl } from '../ui/SegmentedControl';
@@ -16,16 +16,14 @@ import {
   BookHeart,
   Network,
   HeartHandshake,
-  Download,
-  ShieldCheck,
   Sparkles,
   Link2,
 } from 'lucide-react';
 
 export function MoreView() {
   const { objects, setSelectedObject, getRelatedObjects } = useObjects();
-  const { openCapture, setIsSettingsOpen, addToast } = useApp();
-  const { user } = useAuth();
+  const { openCapture, themeMode } = useApp();
+  const isDark = themeMode === 'dark';
   const [activeSection, setActiveSection] = useState<'MEMORIES' | 'JOURNAL' | 'GRAPH' | 'SLO'>('MEMORIES');
 
   const memories = objects.filter((o) => o.type === ObjectType.MEMORY);
@@ -44,16 +42,16 @@ export function MoreView() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif-luxury font-medium text-[#1C1917] tracking-tight">
+          <h2 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#111116]'}`}>
             Memories, Connections & Insights
           </h2>
-          <p className="text-xs text-[#78716C] mt-0.5">
+          <p className={`text-xs mt-0.5 ${isDark ? 'text-[#8E8E98]' : 'text-[#6E6E78]'}`}>
             Cherished moments, personal reflections, graph relationships, and SLO access.
           </p>
         </div>
 
         <Button
-          variant="secondary"
+          variant={isDark ? 'white-pill' : 'primary'}
           size="sm"
           onClick={() => {
             if (activeSection === 'MEMORIES') openCapture(ObjectType.MEMORY);
@@ -78,17 +76,23 @@ export function MoreView() {
       {/* 1. MEMORIES SECTION */}
       {activeSection === 'MEMORIES' && (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-[#FAF5F2] border border-[#E8D5CE] flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#8C5D50]">
+          <div
+            className={`p-4 rounded-2xl flex items-center justify-between transition-all ${
+              isDark
+                ? 'bg-[#0E0F14] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]'
+                : 'bg-white border border-black/[0.05] shadow-[0_2px_12px_rgba(0,0,0,0.04)]'
+            }`}
+          >
+            <div className="flex items-center gap-2 text-purple-400">
               <Sparkles className="w-4 h-4" />
-              <span className="text-xs font-semibold uppercase tracking-wider">
+              <span className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
                 Moments & Memories
               </span>
             </div>
-            <span className="text-xs text-[#8C5D50]">{memories.length} saved</span>
+            <span className={`text-xs font-mono ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{memories.length} saved</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {memories.map((m) => (
               <ObjectCard key={m.id} object={m} onClick={() => setSelectedObject(m)} />
             ))}
@@ -99,17 +103,23 @@ export function MoreView() {
       {/* 2. JOURNAL SECTION */}
       {activeSection === 'JOURNAL' && (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-[#FAF8F2] border border-[#EDE5D6] flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#8C7350]">
+          <div
+            className={`p-4 rounded-2xl flex items-center justify-between transition-all ${
+              isDark
+                ? 'bg-[#0E0F14] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]'
+                : 'bg-white border border-black/[0.05] shadow-[0_2px_12px_rgba(0,0,0,0.04)]'
+            }`}
+          >
+            <div className="flex items-center gap-2 text-amber-500">
               <BookHeart className="w-4 h-4" />
-              <span className="text-xs font-semibold uppercase tracking-wider">
+              <span className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
                 Personal Reflections & Log
               </span>
             </div>
-            <span className="text-xs text-[#8C7350]">{journals.length} reflections</span>
+            <span className={`text-xs font-mono ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{journals.length} reflections</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {journals.map((j) => (
               <ObjectCard key={j.id} object={j} onClick={() => setSelectedObject(j)} />
             ))}
@@ -119,16 +129,22 @@ export function MoreView() {
 
       {/* 3. GRAPH MAP SECTION */}
       {activeSection === 'GRAPH' && (
-        <div className="p-6 rounded-3xl bg-white border border-[#F0ECE8] subtle-shadow space-y-4">
+        <div
+          className={`p-6 rounded-3xl space-y-4 transition-all ${
+            isDark
+              ? 'bg-[#0E0F14] border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.4)]'
+              : 'bg-white border border-black/[0.05] shadow-[0_4px_20px_rgba(0,0,0,0.04)]'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Network className="w-4 h-4 text-[#C5A880]" />
-              <h4 className="text-sm font-medium text-stone-900">Universal Object Connected Graph</h4>
+              <Network className="w-4 h-4 text-amber-500" />
+              <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-[#111116]'}`}>Universal Object Connected Graph</h4>
             </div>
-            <span className="text-xs text-[#8C827D]">{objects.length} connected entities</span>
+            <span className={`text-xs font-mono ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{objects.length} connected entities</span>
           </div>
 
-          <p className="text-xs text-[#78716C] leading-relaxed">
+          <p className={`text-xs leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
             In SAFA, everything is connected. Ideas inspire projects, tasks belong to goals, books generate notes, and memories link to people.
           </p>
 
@@ -139,16 +155,26 @@ export function MoreView() {
                 <div
                   key={obj.id}
                   onClick={() => setSelectedObject(obj)}
-                  className="p-3 rounded-xl bg-[#FAF8F5] border border-[#EBE3DA] hover:border-[#C5A880] transition-all cursor-pointer flex items-center justify-between text-xs"
+                  className={`p-3.5 rounded-2xl transition-all cursor-pointer flex items-center justify-between text-xs ${
+                    isDark
+                      ? 'bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.15]'
+                      : 'bg-black/[0.025] border border-black/[0.05] hover:border-black/[0.12]'
+                  }`}
                 >
                   <div className="min-w-0 pr-2">
-                    <span className="text-[10px] font-semibold text-[#8C5D50] block uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-amber-500 block uppercase tracking-wider">
                       {obj.type}
                     </span>
-                    <span className="font-medium text-stone-900 truncate block">{obj.title}</span>
+                    <span className={`font-semibold truncate block ${isDark ? 'text-white' : 'text-[#111116]'}`}>{obj.title}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-[11px] text-[#8C827D] shrink-0 bg-white px-2 py-0.5 rounded-full border border-[#E5DDD2]">
-                    <Link2 className="w-3 h-3 text-[#C5A880]" />
+                  <div
+                    className={`flex items-center gap-1 text-[11px] shrink-0 px-2 py-0.5 rounded-full border ${
+                      isDark
+                        ? 'text-zinc-400 bg-white/[0.06] border-white/[0.08]'
+                        : 'text-zinc-600 bg-black/[0.04] border-black/[0.06]'
+                    }`}
+                  >
+                    <Link2 className="w-3 h-3 text-amber-500" />
                     <span>{rels.length} links</span>
                   </div>
                 </div>
@@ -161,37 +187,43 @@ export function MoreView() {
       {/* 4. SLO HUB SECTION */}
       {activeSection === 'SLO' && (
         <div className="space-y-4">
-          <div className="p-5 rounded-3xl bg-[#FAF6F3] border border-[#E8D5CE] space-y-3">
+          <div
+            className={`p-5 rounded-3xl space-y-3 transition-all ${
+              isDark
+                ? 'bg-[#0E0F14] border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.4)]'
+                : 'bg-white border border-black/[0.05] shadow-[0_4px_20px_rgba(0,0,0,0.04)]'
+            }`}
+          >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#E8D5CE] flex items-center justify-center text-[#6E4B3E]">
+              <div className="w-10 h-10 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
                 <HeartHandshake className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-stone-900">Special Connection (SLO)</h4>
-                <p className="text-xs text-[#8C827D]">
+                <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-[#111116]'}`}>Special Connection (SLO)</h4>
+                <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
                   Strict authorization boundary. Only objects explicitly enabled with "Allow SLO Access" are visible.
                 </p>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8D5CE]/60 flex items-center justify-between text-xs">
-              <span className="text-stone-700 font-medium">Currently Shared Items:</span>
-              <span className="font-semibold bg-white px-2.5 py-0.5 rounded-full border border-[#E8D5CE] text-[#8C5D50]">
+            <div className={`pt-3 border-t flex items-center justify-between text-xs ${isDark ? 'border-white/[0.06]' : 'border-black/[0.06]'}`}>
+              <span className={`font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>Currently Shared Items:</span>
+              <span className="font-bold bg-purple-500/15 px-2.5 py-0.5 rounded-full border border-purple-500/30 text-purple-400">
                 {sloSharedObjects.length} objects
               </span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#78716C]">
+            <h4 className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
               Shared Objects with SLO
             </h4>
             {sloSharedObjects.length === 0 ? (
-              <p className="text-xs text-[#8C827D] p-4 bg-white rounded-2xl border border-[#F0ECE8] text-center">
+              <p className={`text-xs p-4 rounded-2xl border text-center ${isDark ? 'text-zinc-400 bg-[#0E0F14] border-white/[0.08]' : 'text-zinc-600 bg-white border-black/[0.05]'}`}>
                 No objects are currently shared with SLO. You maintain 100% private custody.
               </p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {sloSharedObjects.map((o) => (
                   <ObjectCard key={o.id} object={o} onClick={() => setSelectedObject(o)} />
                 ))}

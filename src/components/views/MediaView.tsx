@@ -1,12 +1,12 @@
 /**
- * SAFA — Media Shell
+ * SAFA — Media Shell (Build 02.0)
  * Photos, Videos, Music, Books / Reading List, and Movies & Series.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useObjects } from '../../core/context/ObjectContext';
 import { useApp, MediaSubview } from '../../core/context/AppContext';
-import { ObjectType, ObjectStatus } from '../../core/types/objects';
+import { ObjectType } from '../../core/types/objects';
 import { SegmentedControl, SegmentOption } from '../ui/SegmentedControl';
 import { ObjectCard } from '../ui/ObjectCard';
 import { Button } from '../ui/Button';
@@ -22,7 +22,8 @@ import {
 
 export function MediaView() {
   const { objects, setSelectedObject } = useObjects();
-  const { mediaSubview, setMediaSubview, openCapture } = useApp();
+  const { mediaSubview, setMediaSubview, openCapture, themeMode } = useApp();
+  const isDark = themeMode === 'dark';
 
   const subviewOptions: SegmentOption<MediaSubview>[] = [
     { value: 'BOOKS', label: 'Books', icon: <BookOpen className="w-3.5 h-3.5" /> },
@@ -63,16 +64,16 @@ export function MediaView() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif-luxury font-medium text-[#1C1917] tracking-tight">
+          <h2 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#111116]'}`}>
             Media, Literature & Culture
           </h2>
-          <p className="text-xs text-[#78716C] mt-0.5">
+          <p className={`text-xs mt-0.5 ${isDark ? 'text-[#8E8E98]' : 'text-[#6E6E78]'}`}>
             Personal books, cinematic inspirations, and musical memories.
           </p>
         </div>
 
         <Button
-          variant="secondary"
+          variant={isDark ? 'white-pill' : 'primary'}
           size="sm"
           onClick={() => openCapture(currentType)}
           icon={<Plus className="w-3.5 h-3.5" />}
@@ -91,16 +92,16 @@ export function MediaView() {
         />
       </div>
 
-      {/* Media Object List */}
+      {/* Object List */}
       {filteredObjects.length === 0 ? (
         <EmptyState
-          title={`No ${mediaSubview.toLowerCase()} saved`}
-          description="Curate books you love, movies you want to watch, or songs you cherish."
-          actionLabel={`Add ${subviewOptions.find((o) => o.value === mediaSubview)?.label || 'Media'}`}
+          title={`No ${mediaSubview.toLowerCase()} yet`}
+          description="Build your personal sanctuary of timeless art, books, and sound."
+          actionLabel={`Add ${mediaSubview}`}
           onAction={() => openCapture(currentType)}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {filteredObjects.map((obj) => (
             <ObjectCard
               key={obj.id}

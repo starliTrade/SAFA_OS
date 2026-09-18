@@ -1,5 +1,5 @@
 /**
- * SAFA — Universal Inbox Shell
+ * SAFA — Universal Inbox Shell (Build 02.0)
  * Triage raw thoughts, quick captures, and unorganized inputs with AI assistance.
  */
 
@@ -7,22 +7,19 @@ import React, { useState } from 'react';
 import { useObjects } from '../../core/context/ObjectContext';
 import { useApp } from '../../core/context/AppContext';
 import { ObjectType, ObjectStatus } from '../../core/types/objects';
-import { ObjectCard } from '../ui/ObjectCard';
 import { Button } from '../ui/Button';
 import { EmptyState } from '../ui/Toast';
 import { api } from '../../core/services/apiClient';
 import {
   Inbox,
   Sparkles,
-  CheckCircle2,
-  ArrowRight,
-  Archive,
   Loader2,
 } from 'lucide-react';
 
 export function InboxView() {
   const { objects, updateObject, setSelectedObject } = useObjects();
-  const { openCapture, addToast } = useApp();
+  const { openCapture, addToast, themeMode } = useApp();
+  const isDark = themeMode === 'dark';
   const [isAutoTriaging, setIsAutoTriaging] = useState(false);
 
   const inboxObjects = objects.filter((o) => o.status === ObjectStatus.INBOX);
@@ -61,7 +58,7 @@ export function InboxView() {
           triagedCount++;
         }
       }
-      addToast(`AI successfully triaged and organized ${triagedCount} items`, 'rose');
+      addToast(`AI successfully triaged and organized ${triagedCount} items`, 'purple');
     } catch (err: any) {
       addToast(err.message || 'AI Triage partially failed', 'warning');
     } finally {
@@ -75,21 +72,27 @@ export function InboxView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-serif-luxury font-medium text-[#1C1917] tracking-tight">
+            <h2 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-[#F2F2F5]' : 'text-[#111116]'}`}>
               Universal Inbox
             </h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#F5EBE6] text-[#8C5D50] font-semibold border border-[#E8D5CE]">
+            <span
+              className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${
+                isDark
+                  ? 'bg-white/[0.06] text-white/90 border-white/[0.06]'
+                  : 'bg-black/[0.05] text-[#111116] border-black/[0.05]'
+              }`}
+            >
               {inboxObjects.length}
             </span>
           </div>
-          <p className="text-xs text-[#78716C] mt-0.5">
+          <p className={`text-xs mt-0.5 ${isDark ? 'text-[#8E8E98]' : 'text-[#6E6E78]'}`}>
             Everything captured on the fly lands here. Review, connect, and file when ready.
           </p>
         </div>
 
         {inboxObjects.length > 0 && (
           <Button
-            variant="rose"
+            variant={isDark ? 'white-pill' : 'primary'}
             size="sm"
             onClick={handleTriageWithAI}
             disabled={isAutoTriaging}
@@ -97,7 +100,7 @@ export function InboxView() {
               isAutoTriaging ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
-                <Sparkles className="w-3.5 h-3.5" />
+                <Sparkles className="w-3.5 h-3.5 text-purple-600" />
               )
             }
           >
@@ -116,65 +119,69 @@ export function InboxView() {
           onAction={() => openCapture()}
         />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {inboxObjects.map((item) => (
             <div
               key={item.id}
-              className="p-4 rounded-2xl bg-white border border-[#F0ECE8] subtle-shadow space-y-3"
+              className={`p-4 sm:p-5 rounded-[26px] space-y-3 transition-all ${
+                isDark
+                  ? 'bg-[#0E0F14] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),inset_0_0_0_1px_rgba(255,255,255,0.035),0_16px_40px_-10px_rgba(0,0,0,0.7)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_20px_40px_rgba(0,0,0,0.8)]'
+                  : 'bg-white shadow-[inset_0_1px_0_0_rgba(255,255,255,1),0_8px_24px_rgba(0,0,0,0.04)] border border-black/[0.045] hover:shadow-[0_12px_32px_rgba(0,0,0,0.07)]'
+              }`}
             >
               <div
                 onClick={() => setSelectedObject(item)}
-                className="cursor-pointer hover:opacity-80 transition-opacity"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] uppercase tracking-wider font-semibold text-[#8C827D]">
+                  <span className={`text-[10px] uppercase tracking-wider font-semibold ${isDark ? 'text-white/50' : 'text-black/50'}`}>
                     Raw Capture
                   </span>
-                  <span className="text-[10px] text-[#A8A29E]">
+                  <span className={`text-[10px] font-mono ${isDark ? 'text-[#5C5C68]' : 'text-[#8E8E98]'}`}>
                     {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
-                <h4 className="text-sm font-medium text-[#1C1917]">{item.title}</h4>
+                <h4 className={`text-base font-semibold tracking-tight ${isDark ? 'text-white' : 'text-[#111116]'}`}>{item.title}</h4>
                 {item.description && (
-                  <p className="text-xs text-[#78716C] mt-1 line-clamp-2">{item.description}</p>
+                  <p className={`text-xs mt-1 line-clamp-2 leading-relaxed ${isDark ? 'text-[#9E9EA8]' : 'text-[#6E6E78]'}`}>{item.description}</p>
                 )}
               </div>
 
               {/* Quick triage actions bar */}
-              <div className="pt-2 border-t border-[#F5F2EC] flex items-center justify-between flex-wrap gap-2 text-xs">
-                <span className="text-[11px] text-[#8C827D] font-medium">Convert to:</span>
+              <div className={`pt-3 border-t flex items-center justify-between flex-wrap gap-2 text-xs ${isDark ? 'border-white/[0.04]' : 'border-black/[0.05]'}`}>
+                <span className={`text-xs font-medium ${isDark ? 'text-[#8E8E98]' : 'text-[#6E6E78]'}`}>Convert to:</span>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant={isDark ? 'dark-pill' : 'outline'}
+                    size="xs"
                     onClick={() => handleTriageItem(item.id, ObjectType.TASK)}
                   >
                     Task
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant={isDark ? 'dark-pill' : 'outline'}
+                    size="xs"
                     onClick={() => handleTriageItem(item.id, ObjectType.IDEA)}
                   >
                     Idea
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant={isDark ? 'dark-pill' : 'outline'}
+                    size="xs"
                     onClick={() => handleTriageItem(item.id, ObjectType.NOTE)}
                   >
                     Note
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant={isDark ? 'dark-pill' : 'outline'}
+                    size="xs"
                     onClick={() => handleTriageItem(item.id, ObjectType.PROJECT)}
                   >
                     Project
                   </Button>
                   <Button
-                    variant="secondary"
-                    size="sm"
+                    variant={isDark ? 'white-pill' : 'primary'}
+                    size="xs"
                     onClick={() =>
                       updateObject(item.id, { status: ObjectStatus.ACTIVE }).then(() =>
                         addToast('Marked as Active', 'success')

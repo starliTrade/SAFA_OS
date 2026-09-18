@@ -1,126 +1,192 @@
 /**
- * SAFA — iPhone-First Bottom Navigation
- * High-end tactile navigation with center Universal Capture (+) action.
+ * SAFA — Ultra-Refined Frosted Liquid-Glass Capsule Dock & Companion Action
+ * Authentic Liquid Glassmorphism:
+ * - Ultra-subtle, whisper-thin border with velvety seamless fusion
+ * - Soft, understated active indicator with smooth spring motion
+ * - Curated luxury icon set from lucide-react (LayoutGrid, Compass, SquarePen, Waves, Inbox, Search)
  */
 
 import React from 'react';
-import { Home, Compass, Plus, Sparkles, FolderHeart, MoreHorizontal, Layers } from 'lucide-react';
+import { LayoutGrid, Compass, SquarePen, Waves, Inbox, Search } from 'lucide-react';
 import { useApp, NavTab } from '../../core/context/AppContext';
 import { useAuth } from '../../core/context/AuthContext';
 import { motion } from 'motion/react';
 
 export function BottomNavigation() {
-  const { currentTab, setCurrentTab, openCapture } = useApp();
+  const { currentTab, setCurrentTab, setIsSearchOpen, themeMode } = useApp();
   const { isRTL } = useAuth();
+  const isDark = themeMode === 'dark';
 
-  const navItems: { tab: NavTab; label: string; faLabel: string; icon: React.ReactNode }[] = [
+  const navItems: {
+    tab: NavTab;
+    label: string;
+    faLabel: string;
+    icon: (active: boolean) => React.ReactNode;
+  }[] = [
     {
       tab: 'HOME',
       label: 'Home',
       faLabel: 'خانه',
-      icon: <Home className="w-5 h-5 stroke-[1.75]" />,
+      icon: (active: boolean) => (
+        <LayoutGrid
+          className={`w-[16.5px] h-[16.5px] transition-colors duration-200 ${
+            active
+              ? isDark
+                ? 'stroke-[#EDEDEF] stroke-[1.9]'
+                : 'stroke-zinc-900 stroke-[1.9]'
+              : isDark
+              ? 'stroke-[#85858F] group-hover:stroke-zinc-300 stroke-[1.5]'
+              : 'stroke-zinc-500 group-hover:stroke-zinc-800 stroke-[1.5]'
+          }`}
+        />
+      ),
     },
     {
       tab: 'LIFE',
       label: 'Life',
       faLabel: 'زندگی',
-      icon: <Layers className="w-5 h-5 stroke-[1.75]" />,
+      icon: (active: boolean) => (
+        <Compass
+          className={`w-[16.5px] h-[16.5px] transition-colors duration-200 ${
+            active
+              ? isDark
+                ? 'stroke-[#EDEDEF] stroke-[1.9]'
+                : 'stroke-zinc-900 stroke-[1.9]'
+              : isDark
+              ? 'stroke-[#85858F] group-hover:stroke-zinc-300 stroke-[1.5]'
+              : 'stroke-zinc-500 group-hover:stroke-zinc-800 stroke-[1.5]'
+          }`}
+        />
+      ),
     },
     {
       tab: 'CREATE',
-      label: 'Create',
-      faLabel: 'خلق',
-      icon: <Sparkles className="w-5 h-5 stroke-[1.75]" />,
+      label: 'Studio',
+      faLabel: 'استودیو',
+      icon: (active: boolean) => (
+        <SquarePen
+          className={`w-[16.5px] h-[16.5px] transition-colors duration-200 ${
+            active
+              ? isDark
+                ? 'stroke-[#EDEDEF] stroke-[1.9]'
+                : 'stroke-zinc-900 stroke-[1.9]'
+              : isDark
+              ? 'stroke-[#85858F] group-hover:stroke-zinc-300 stroke-[1.5]'
+              : 'stroke-zinc-500 group-hover:stroke-zinc-800 stroke-[1.5]'
+          }`}
+        />
+      ),
     },
     {
       tab: 'MEDIA',
-      label: 'Media',
-      faLabel: 'رسانه',
-      icon: <FolderHeart className="w-5 h-5 stroke-[1.75]" />,
+      label: 'Focus',
+      faLabel: 'تمرکز',
+      icon: (active: boolean) => (
+        <Waves
+          className={`w-[16.5px] h-[16.5px] transition-colors duration-200 ${
+            active
+              ? isDark
+                ? 'stroke-[#EDEDEF] stroke-[1.9]'
+                : 'stroke-zinc-900 stroke-[1.9]'
+              : isDark
+              ? 'stroke-[#85858F] group-hover:stroke-zinc-300 stroke-[1.5]'
+              : 'stroke-zinc-500 group-hover:stroke-zinc-800 stroke-[1.5]'
+          }`}
+        />
+      ),
     },
     {
-      tab: 'MORE',
-      label: 'More',
-      faLabel: 'بیشتر',
-      icon: <MoreHorizontal className="w-5 h-5 stroke-[1.75]" />,
+      tab: 'INBOX',
+      label: 'Inbox',
+      faLabel: 'ورودی',
+      icon: (active: boolean) => (
+        <Inbox
+          className={`w-[16.5px] h-[16.5px] transition-colors duration-200 ${
+            active
+              ? isDark
+                ? 'stroke-[#EDEDEF] stroke-[1.9]'
+                : 'stroke-zinc-900 stroke-[1.9]'
+              : isDark
+              ? 'stroke-[#85858F] group-hover:stroke-zinc-300 stroke-[1.5]'
+              : 'stroke-zinc-500 group-hover:stroke-zinc-800 stroke-[1.5]'
+          }`}
+        />
+      ),
     },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-safe-offset-2 pt-2 pointer-events-none flex justify-center">
-      <div className="pointer-events-auto luxury-glass rounded-full border border-[#E7E0D8]/90 subtle-shadow px-3 py-2 flex items-center gap-1 sm:gap-2 max-w-md w-full justify-between backdrop-blur-xl">
-        {/* Left items */}
-        <div className="flex items-center gap-1">
-          {navItems.slice(0, 2).map((item) => {
+    <nav
+      aria-label="Bottom Navigation"
+      className="fixed bottom-0 left-0 right-0 z-40 px-3 sm:px-5 pb-safe pt-1 pointer-events-none flex justify-center items-center mb-2 sm:mb-3.5"
+    >
+      <div className="pointer-events-auto flex items-center gap-2 w-full max-w-[450px]">
+        {/* Full-width Slim Liquid Glass Capsule Dock */}
+        <div
+          className={`relative flex-1 flex items-center justify-between p-1 rounded-full select-none transition-all duration-300 ${
+            isDark
+              ? 'liquid-glass-dark-dock'
+              : 'liquid-glass-light-dock'
+          }`}
+        >
+          {navItems.map((item) => {
             const isActive = currentTab === item.tab;
+
             return (
               <button
                 key={item.tab}
                 type="button"
                 onClick={() => setCurrentTab(item.tab)}
-                className={`relative px-3 py-1.5 rounded-full flex flex-col items-center justify-center gap-0.5 transition-colors duration-150 cursor-pointer ${
-                  isActive ? 'text-[#1C1917]' : 'text-[#8C827D] hover:text-[#44403C]'
-                }`}
+                className="group relative flex-1 py-1.5 px-1 rounded-full cursor-pointer flex flex-col items-center justify-center transition-all duration-200 active:scale-95"
+                title={isRTL ? item.faLabel : item.label}
+                aria-label={item.label}
               >
+                {/* Ultra-soft, understated active cushion with velvet warmth */}
                 {isActive && (
                   <motion.div
-                    layoutId="active-tab-indicator"
-                    className="absolute inset-0 bg-[#F5EBE6]/80 rounded-full"
-                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                    layoutId="glassCushionActive"
+                    className={`absolute inset-0.5 rounded-full ${
+                      isDark
+                        ? 'bg-white/[0.035] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]'
+                        : 'liquid-glass-light-active-cushion'
+                    }`}
+                    transition={{ type: 'spring', stiffness: 420, damping: 36 }}
                   />
                 )}
-                <span className="relative z-10">{item.icon}</span>
-                <span className="relative z-10 text-[10px] font-medium tracking-tight">
-                  {isRTL ? item.faLabel : item.label}
-                </span>
+
+                <div className="relative z-10 flex flex-col items-center gap-0.5">
+                  {item.icon(isActive)}
+                  <span
+                    className={`text-[9.5px] leading-tight tracking-tight transition-colors duration-200 ${
+                      isActive
+                        ? isDark ? 'text-[#EDEDEF] font-medium' : 'text-zinc-900 font-medium'
+                        : isDark ? 'text-[#85858F] group-hover:text-zinc-300 font-normal' : 'text-zinc-500 group-hover:text-zinc-800 font-normal'
+                    }`}
+                  >
+                    {isRTL ? item.faLabel : item.label}
+                  </span>
+                </div>
               </button>
             );
           })}
         </div>
 
-        {/* Center Universal Capture Button */}
-        <div className="relative -my-4 px-1">
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => openCapture()}
-            className="w-13 h-13 rounded-full bg-gradient-to-tr from-[#1C1917] to-[#38332F] text-[#FAF8F5] flex items-center justify-center shadow-lg border-2 border-white cursor-pointer group"
-            title="Universal Capture (+)"
-            aria-label="Universal Capture"
-          >
-            <Plus className="w-6 h-6 stroke-[2.2] group-hover:rotate-90 transition-transform duration-200 text-[#F5EBE6]" />
-          </motion.button>
-        </div>
-
-        {/* Right items */}
-        <div className="flex items-center gap-1">
-          {navItems.slice(2).map((item) => {
-            const isActive = currentTab === item.tab;
-            return (
-              <button
-                key={item.tab}
-                type="button"
-                onClick={() => setCurrentTab(item.tab)}
-                className={`relative px-3 py-1.5 rounded-full flex flex-col items-center justify-center gap-0.5 transition-colors duration-150 cursor-pointer ${
-                  isActive ? 'text-[#1C1917]' : 'text-[#8C827D] hover:text-[#44403C]'
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="active-tab-indicator"
-                    className="absolute inset-0 bg-[#F5EBE6]/80 rounded-full"
-                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                  />
-                )}
-                <span className="relative z-10">{item.icon}</span>
-                <span className="relative z-10 text-[10px] font-medium tracking-tight">
-                  {isRTL ? item.faLabel : item.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Compact Companion Circular Liquid Glass Search Button */}
+        <button
+          type="button"
+          onClick={() => setIsSearchOpen(true)}
+          className={`relative w-9.5 h-9.5 sm:w-10 sm:h-10 rounded-full active:scale-95 flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 ${
+            isDark
+              ? 'liquid-glass-dark-dock hover:bg-[#14141E]/60 text-[#85858F] hover:text-[#EDEDEF]'
+              : 'liquid-glass-light-dock hover:bg-white/50 text-zinc-600 hover:text-zinc-900'
+          }`}
+          title="Search & Spotlight"
+          aria-label="Search"
+        >
+          <Search className="w-3.5 h-3.5 stroke-[1.9]" />
+        </button>
       </div>
-    </div>
+    </nav>
   );
 }
+

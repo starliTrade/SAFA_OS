@@ -1,5 +1,5 @@
 /**
- * SAFA — Object Detail & Relationship Inspector Modal
+ * SAFA — Object Detail & Relationship Inspector Modal (Build 02.0)
  * Deep inspection and connection graph management for any Universal Object.
  */
 
@@ -14,13 +14,7 @@ import { useApp } from '../../core/context/AppContext';
 import {
   Link2,
   Trash2,
-  ShieldCheck,
-  Tag as TagIcon,
   Plus,
-  ArrowRight,
-  ExternalLink,
-  Calendar,
-  Lock,
   HeartHandshake,
 } from 'lucide-react';
 
@@ -73,7 +67,7 @@ export function ObjectDetailModal() {
     if (confirm('Are you sure you want to delete this object from SAFA?')) {
       try {
         await deleteObject(selectedObject.id);
-        addToast('Object deleted', 'rose');
+        addToast('Object deleted', 'purple');
         setSelectedObject(null);
       } catch (err: any) {
         addToast(err.message || 'Failed to delete', 'warning');
@@ -100,40 +94,40 @@ export function ObjectDetailModal() {
       isOpen={!!selectedObject}
       onClose={() => setSelectedObject(null)}
       title={`${selectedObject.type} Details`}
-      subtitle={`ID: ${selectedObject.id} • Created ${new Date(selectedObject.createdAt).toLocaleDateString()}`}
+      subtitle={`Created ${new Date(selectedObject.createdAt).toLocaleDateString()}`}
       maxWidth="lg"
     >
       <div className="space-y-5">
         {/* Title input */}
         <div>
-          <label className="block text-xs font-medium text-[#78716C] mb-1">Title</label>
+          <label className="block text-xs font-bold text-zinc-400 mb-1">Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-white border border-[#E7E0D8] rounded-xl px-3.5 py-2 text-sm text-[#1C1917] font-medium focus:outline-none focus:border-[#C5A880]"
+            className="w-full bg-[#18181D] border border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-white font-semibold focus:outline-none focus:border-white/30"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-medium text-[#78716C] mb-1">Description / Notes</label>
+          <label className="block text-xs font-bold text-zinc-400 mb-1">Description / Notes</label>
           <textarea
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-white border border-[#E7E0D8] rounded-xl p-3 text-sm text-[#1C1917] focus:outline-none focus:border-[#C5A880] resize-y"
+            className="w-full bg-[#18181D] border border-white/[0.08] rounded-xl p-3 text-sm text-zinc-200 focus:outline-none focus:border-white/30 resize-y"
           />
         </div>
 
         {/* Status selector */}
         <div className="flex items-center gap-3">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-[#78716C] mb-1">Status</label>
+            <label className="block text-xs font-bold text-zinc-400 mb-1">Status</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as ObjectStatus)}
-              className="w-full bg-white border border-[#E7E0D8] rounded-xl px-3 py-2 text-xs text-[#1C1917] focus:outline-none focus:border-[#C5A880]"
+              className="w-full bg-[#18181D] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
             >
               <option value={ObjectStatus.ACTIVE}>Active</option>
               <option value={ObjectStatus.INBOX}>Inbox</option>
@@ -145,14 +139,14 @@ export function ObjectDetailModal() {
           </div>
 
           <div className="flex-1">
-            <label className="block text-xs font-medium text-[#78716C] mb-1">Privacy & SLO</label>
+            <label className="block text-xs font-bold text-zinc-400 mb-1">Privacy & SLO</label>
             <button
               type="button"
               onClick={() => setAllowSLO(!allowSLO)}
-              className={`w-full py-2 px-3 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`w-full py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 allowSLO
-                  ? 'bg-[#FAF5F2] text-[#8C5D50] border-[#E8D5CE]'
-                  : 'bg-stone-50 text-stone-600 border-stone-200'
+                  ? 'bg-purple-950/40 text-purple-300 border-purple-500/30'
+                  : 'bg-[#18181D] text-zinc-400 border-white/[0.08]'
               }`}
             >
               <HeartHandshake className="w-3.5 h-3.5" />
@@ -164,27 +158,27 @@ export function ObjectDetailModal() {
         {/* Tags */}
         {selectedObject.tags?.length > 0 && (
           <div>
-            <label className="block text-xs font-medium text-[#78716C] mb-1.5">Tags</label>
+            <label className="block text-xs font-bold text-zinc-400 mb-1.5">Tags</label>
             <div className="flex items-center gap-2 flex-wrap">
               {selectedObject.tags.map((t) => (
-                <Tag key={t} label={t} color="neutral" />
+                <Tag key={t} label={t} variant="neutral" />
               ))}
             </div>
           </div>
         )}
 
         {/* Connected Graph Relationships */}
-        <div className="p-4 rounded-2xl bg-[#F8F5EE] border border-[#EAE3D6] space-y-3">
+        <div className="p-4 rounded-2xl bg-[#18181D] border border-white/[0.08] space-y-3 shadow-inner">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#78716C] flex items-center gap-1.5">
-              <Link2 className="w-3.5 h-3.5 text-[#C5A880]" />
+            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
+              <Link2 className="w-3.5 h-3.5 text-amber-400" />
               Connected Graph Relations ({related.length})
             </h4>
             {!isLinking && (
               <button
                 type="button"
                 onClick={() => setIsLinking(true)}
-                className="text-xs text-[#8C5D50] hover:underline flex items-center gap-1 font-medium cursor-pointer"
+                className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1 font-semibold cursor-pointer"
               >
                 <Plus className="w-3 h-3" /> Connect to Object
               </button>
@@ -193,13 +187,13 @@ export function ObjectDetailModal() {
 
           {/* New Relationship Form */}
           {isLinking && (
-            <div className="p-3 bg-white rounded-xl border border-[#E0D8CE] space-y-2 text-xs">
-              <div className="font-medium text-stone-800">Add Relationship</div>
+            <div className="p-3 bg-[#202026] rounded-xl border border-white/[0.08] space-y-2 text-xs">
+              <div className="font-semibold text-white">Add Relationship</div>
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={linkType}
                   onChange={(e) => setLinkType(e.target.value as RelationshipType)}
-                  className="bg-stone-50 border border-stone-200 rounded-lg p-1.5"
+                  className="bg-[#18181D] border border-white/[0.08] text-white rounded-lg p-1.5"
                 >
                   <option value={RelationshipType.RELATED_TO}>RELATED_TO</option>
                   <option value={RelationshipType.PART_OF}>PART_OF</option>
@@ -212,7 +206,7 @@ export function ObjectDetailModal() {
                 <select
                   value={targetObjectId}
                   onChange={(e) => setTargetObjectId(e.target.value)}
-                  className="bg-stone-50 border border-stone-200 rounded-lg p-1.5"
+                  className="bg-[#18181D] border border-white/[0.08] text-white rounded-lg p-1.5"
                 >
                   <option value="">Select target object...</option>
                   {availableTargets.map((t) => (
@@ -227,11 +221,11 @@ export function ObjectDetailModal() {
                 <button
                   type="button"
                   onClick={() => setIsLinking(false)}
-                  className="text-stone-500 hover:text-stone-800 cursor-pointer"
+                  className="text-zinc-400 hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
-                <Button size="sm" variant="rose" onClick={handleAddRelationship} disabled={!targetObjectId}>
+                <Button size="sm" variant="white-pill" onClick={handleAddRelationship} disabled={!targetObjectId}>
                   Save Link
                 </Button>
               </div>
@@ -240,7 +234,7 @@ export function ObjectDetailModal() {
 
           {/* Linked Objects List */}
           {related.length === 0 ? (
-            <p className="text-xs text-[#8C827D] italic">
+            <p className="text-xs text-zinc-500 italic">
               No relationships connected yet. Link this to projects, notes, or inspirations.
             </p>
           ) : (
@@ -248,20 +242,20 @@ export function ObjectDetailModal() {
               {related.map(({ rel, object: relObj }) => (
                 <div
                   key={rel.id}
-                  className="p-2.5 rounded-xl bg-white border border-[#EAE3D6] flex items-center justify-between text-xs group"
+                  className="p-2.5 rounded-xl bg-[#202026] border border-white/[0.06] flex items-center justify-between text-xs group"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-semibold text-[#8C5D50] bg-[#FAF5F2] px-2 py-0.5 rounded border border-[#E8D5CE]">
+                    <span className="text-[10px] font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
                       {rel.type}
                     </span>
-                    <span className="font-medium text-stone-800 truncate">
+                    <span className="font-semibold text-white truncate">
                       {relObj?.title || 'Unknown Object'}
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => unlinkObjects(rel.id)}
-                    className="text-stone-400 hover:text-red-500 cursor-pointer text-xs"
+                    className="text-zinc-500 hover:text-rose-400 cursor-pointer text-xs p-1"
                     title="Unlink"
                   >
                     ×
@@ -273,9 +267,9 @@ export function ObjectDetailModal() {
         </div>
 
         {/* Modal Actions */}
-        <div className="pt-3 flex items-center justify-between border-t border-[#F0ECE8]">
-          <Button variant="ghost" size="sm" onClick={handleDelete} className="text-red-600 hover:bg-red-50">
-            <Trash2 className="w-4 h-4 mr-1.5 text-red-500" />
+        <div className="pt-3 flex items-center justify-between border-t border-white/[0.06]">
+          <Button variant="ghost" size="sm" onClick={handleDelete} className="text-rose-400 hover:bg-rose-500/10">
+            <Trash2 className="w-4 h-4 mr-1.5 text-rose-400" />
             Delete
           </Button>
 
@@ -283,7 +277,7 @@ export function ObjectDetailModal() {
             <Button variant="ghost" size="sm" onClick={() => setSelectedObject(null)}>
               Cancel
             </Button>
-            <Button variant="primary" size="sm" onClick={handleSaveUpdates}>
+            <Button variant="white-pill" size="sm" onClick={handleSaveUpdates}>
               Save Changes
             </Button>
           </div>

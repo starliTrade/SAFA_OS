@@ -1,18 +1,17 @@
 /**
- * SAFA — Create Shell & Creative Atelier
+ * SAFA — Create Shell & Creative Atelier (Build 02.0)
  * Notes, Concept Ideas, Longform Writing, Sketches, and Fashion Studio / Swatches.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useObjects } from '../../core/context/ObjectContext';
 import { useApp, CreateSubview } from '../../core/context/AppContext';
-import { ObjectType, ObjectStatus } from '../../core/types/objects';
+import { ObjectType } from '../../core/types/objects';
 import { SegmentedControl, SegmentOption } from '../ui/SegmentedControl';
 import { ObjectCard } from '../ui/ObjectCard';
 import { Button } from '../ui/Button';
 import { EmptyState } from '../ui/Toast';
 import {
-  Sparkles,
   FileText,
   Lightbulb,
   PenTool,
@@ -23,7 +22,8 @@ import {
 
 export function CreateView() {
   const { objects, setSelectedObject } = useObjects();
-  const { createSubview, setCreateSubview, openCapture } = useApp();
+  const { createSubview, setCreateSubview, openCapture, themeMode } = useApp();
+  const isDark = themeMode === 'dark';
 
   const subviewOptions: SegmentOption<CreateSubview>[] = [
     { value: 'NOTES', label: 'Notes', icon: <FileText className="w-3.5 h-3.5" /> },
@@ -61,10 +61,10 @@ export function CreateView() {
 
   // Fashion Atelier Color Palette Inspiration
   const atelierPalettes = [
-    { name: 'Raw Silk & Linen', hex: '#FAF5F0', border: '#EAE0D4' },
-    { name: 'Dusty Rose Petal', hex: '#F5EBE6', border: '#E8D5CE' },
-    { name: 'Antique Gold Thread', hex: '#EBE2D3', border: '#DFCBB2' },
-    { name: 'Earthy Clay Charcoal', hex: '#292524', border: '#1C1917' },
+    { name: 'Raw Mulberry Silk', hex: '#FAF5F0', border: 'rgba(255,255,255,0.1)' },
+    { name: 'Midnight Charcoal', hex: '#161619', border: 'rgba(255,255,255,0.15)' },
+    { name: 'Warm Amber Gold', hex: '#FACC15', border: 'rgba(250,204,21,0.3)' },
+    { name: 'Deep Iris Violet', hex: '#A855F7', border: 'rgba(168,85,247,0.3)' },
   ];
 
   return (
@@ -72,16 +72,16 @@ export function CreateView() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif-luxury font-medium text-[#1C1917] tracking-tight">
+          <h2 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#111116]'}`}>
             Creative Atelier & Studio
           </h2>
-          <p className="text-xs text-[#78716C] mt-0.5">
+          <p className={`text-xs mt-0.5 ${isDark ? 'text-[#8E8E98]' : 'text-[#6E6E78]'}`}>
             Capture thoughts, design capsules, moodboards, and artistic concepts.
           </p>
         </div>
 
         <Button
-          variant="rose"
+          variant={isDark ? 'white-pill' : 'primary'}
           size="sm"
           onClick={() => openCapture(currentType)}
           icon={<Plus className="w-3.5 h-3.5" />}
@@ -102,28 +102,37 @@ export function CreateView() {
 
       {/* Special Fashion Atelier Palette Header if in Studio view */}
       {createSubview === 'STUDIO' && (
-        <div className="p-4 rounded-2xl bg-[#FAF8F4] border border-[#EDE5D8] space-y-3">
+        <div
+          className={`p-4 sm:p-5 rounded-[26px] space-y-3 transition-all ${
+            isDark
+              ? 'bg-[#0E0F14] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_16px_36px_rgba(0,0,0,0.6)]'
+              : 'bg-white shadow-[inset_0_1px_0_0_rgba(255,255,255,1),0_8px_24px_rgba(0,0,0,0.05)] border border-black/[0.05]'
+          }`}
+        >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#78716C] flex items-center gap-1.5">
-              <Palette className="w-3.5 h-3.5 text-[#C5A880]" />
-              Spring / Capsule Atelier Swatches
+            <span className={`text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 ${isDark ? 'text-zinc-200' : 'text-[#111116]'}`}>
+              <Palette className="w-3.5 h-3.5 text-amber-400" />
+              Autumn / Capsule Atelier Swatches
             </span>
-            <span className="text-[11px] text-[#8C827D]">Curated Palette</span>
+            <span className={`text-[11px] font-mono ${isDark ? 'text-zinc-500' : 'text-[#8E8E98]'}`}>Curated Palette</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             {atelierPalettes.map((p) => (
               <div
                 key={p.name}
-                className="p-2.5 rounded-xl bg-white border flex items-center gap-2.5 shadow-2xs"
-                style={{ borderColor: p.border }}
+                className={`p-2.5 rounded-2xl flex items-center gap-2.5 transition-all ${
+                  isDark
+                    ? 'bg-white/[0.04] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]'
+                    : 'bg-black/[0.03] border border-black/[0.04]'
+                }`}
               >
                 <div
-                  className="w-6 h-6 rounded-lg border shadow-xs"
+                  className="w-6 h-6 rounded-lg border shadow-xs shrink-0"
                   style={{ backgroundColor: p.hex, borderColor: p.border }}
                 />
                 <div className="min-w-0">
-                  <span className="text-xs font-medium text-[#1C1917] block truncate">{p.name}</span>
-                  <span className="text-[10px] text-[#8C827D] uppercase font-mono">{p.hex}</span>
+                  <span className={`text-xs font-semibold block truncate ${isDark ? 'text-white' : 'text-[#111116]'}`}>{p.name}</span>
+                  <span className={`text-[10px] uppercase font-mono ${isDark ? 'text-zinc-400' : 'text-[#8E8E98]'}`}>{p.hex}</span>
                 </div>
               </div>
             ))}
@@ -140,7 +149,7 @@ export function CreateView() {
           onAction={() => openCapture(currentType)}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {filteredObjects.map((obj) => (
             <ObjectCard
               key={obj.id}

@@ -1,5 +1,6 @@
 /**
- * SAFA — Form & Search Inputs
+ * SAFA — Unified Velvet Form Inputs (Build 02.1)
+ * High-craft tactile inputs matching #131317, micro-hairlines, and calm focus rings.
  */
 
 import React, { InputHTMLAttributes, TextareaHTMLAttributes, forwardRef, ReactNode } from 'react';
@@ -18,30 +19,30 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label className="block text-xs font-medium text-[#57534E] tracking-wide">
+          <label className="block text-xs font-semibold text-[#92929B] tracking-tight">
             {label}
           </label>
         )}
         <div className="relative flex items-center">
           {leftIcon && (
-            <div className="absolute left-3.5 text-[#8C827D] pointer-events-none flex items-center">
+            <div className="absolute left-3.5 text-[#71717A] pointer-events-none flex items-center">
               {leftIcon}
             </div>
           )}
           <input
             ref={ref}
-            className={`w-full bg-[#FFFFFF] border border-[#E7E2DC] rounded-xl px-3.5 py-2.5 text-sm text-[#1C1917] placeholder-[#A8A29E] transition-all duration-150 focus:outline-none focus:border-[#C5A880] focus:ring-2 focus:ring-[#C5A880]/15 ${
+            className={`w-full bg-[#131317] border border-white/[0.06] rounded-xl px-3.5 py-2.5 text-sm text-[#EDEDEF] placeholder-[#5C5C66] transition-all duration-150 focus:outline-none focus:border-white/[0.16] shadow-inner ${
               leftIcon ? 'pl-10' : ''
-            } ${rightIcon ? 'pr-10' : ''} ${error ? 'border-red-400 focus:border-red-500' : ''} ${className}`}
+            } ${rightIcon ? 'pr-10' : ''} ${error ? 'border-rose-500/50 focus:border-rose-500' : ''} ${className}`}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute right-3.5 text-[#8C827D] flex items-center">
+            <div className="absolute right-3.5 text-[#71717A] flex items-center">
               {rightIcon}
             </div>
           )}
         </div>
-        {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+        {error && <p className="text-xs text-rose-400 mt-1">{error}</p>}
       </div>
     );
   }
@@ -59,19 +60,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label className="block text-xs font-medium text-[#57534E] tracking-wide">
+          <label className="block text-xs font-semibold text-[#92929B] tracking-tight">
             {label}
           </label>
         )}
         <textarea
           ref={ref}
           rows={rows}
-          className={`w-full bg-[#FFFFFF] border border-[#E7E2DC] rounded-xl p-3.5 text-sm text-[#1C1917] placeholder-[#A8A29E] transition-all duration-150 focus:outline-none focus:border-[#C5A880] focus:ring-2 focus:ring-[#C5A880]/15 resize-y ${
-            error ? 'border-red-400 focus:border-red-500' : ''
+          className={`w-full bg-[#131317] border border-white/[0.06] rounded-xl p-3.5 text-sm text-[#EDEDEF] placeholder-[#5C5C66] transition-all duration-150 focus:outline-none focus:border-white/[0.16] resize-y shadow-inner ${
+            error ? 'border-rose-500/50 focus:border-rose-500' : ''
           } ${className}`}
           {...props}
         />
-        {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+        {error && <p className="text-xs text-rose-400 mt-1">{error}</p>}
       </div>
     );
   }
@@ -96,25 +97,22 @@ export function SearchBar({
 }: SearchBarProps) {
   return (
     <div className="relative w-full flex items-center">
-      <Search className="absolute left-3.5 w-4 h-4 text-[#8C827D] pointer-events-none" />
+      <Search className="absolute left-3.5 w-4 h-4 text-[#71717A] pointer-events-none" />
       <input
         type="text"
-        autoFocus={autoFocus}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-[#FFFFFF] border border-[#E7E2DC] rounded-full pl-10 pr-10 py-2.5 text-sm text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:border-[#C5A880] focus:ring-2 focus:ring-[#C5A880]/15 transition-all shadow-xs"
+        autoFocus={autoFocus}
+        className="w-full bg-[#131317] border border-white/[0.06] rounded-full pl-10 pr-10 py-2.5 text-sm text-[#EDEDEF] placeholder-[#5C5C66] focus:outline-none focus:border-white/[0.16] transition-all shadow-inner tracking-tight"
       />
-      {value && (
+      {value && onClear && (
         <button
           type="button"
-          onClick={() => {
-            onChange('');
-            onClear?.();
-          }}
-          className="absolute right-3.5 w-5 h-5 rounded-full bg-[#F5F2EC] text-[#57534E] hover:bg-[#EBE6DE] flex items-center justify-center cursor-pointer"
+          onClick={onClear}
+          className="absolute right-3.5 p-1 rounded-full text-[#71717A] hover:text-[#EDEDEF] transition-colors cursor-pointer"
         >
-          <X className="w-3 h-3" />
+          <X className="w-3.5 h-3.5" />
         </button>
       )}
     </div>

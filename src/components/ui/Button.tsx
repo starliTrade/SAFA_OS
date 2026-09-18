@@ -1,14 +1,15 @@
 /**
- * SAFA — UI Components (Button, IconButton, Chip, Tag, Avatar)
+ * SAFA — Unified Tactile Controls (Button, IconButton, Tag, Avatar)
+ * High-craft, velvety cohesion, soft satin active states.
  */
 
 import React, { ReactNode, ButtonHTMLAttributes } from 'react';
-import { motion, HTMLMotionProps } from 'motion/react';
+import { X } from 'lucide-react';
 
 // --- Button ---
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'rose' | 'ghost' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'white-pill' | 'dark-pill' | 'ghost' | 'outline' | 'rose';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   children: ReactNode;
   icon?: ReactNode;
   fullWidth?: boolean;
@@ -24,20 +25,33 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium tracking-tight transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]';
+  const baseStyles =
+    'inline-flex items-center justify-center font-medium tracking-tight transition-all duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none active:scale-[0.97]';
 
   const sizeStyles = {
+    xs: 'text-[11px] px-2.5 py-1 rounded-full gap-1',
     sm: 'text-xs px-3.5 py-1.5 rounded-full gap-1.5',
-    md: 'text-sm px-5 py-2.5 rounded-full gap-2',
-    lg: 'text-base px-6 py-3.5 rounded-full gap-2.5',
+    md: 'text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-full gap-2',
+    lg: 'text-base px-6 py-3 rounded-full gap-2.5',
   }[size];
 
   const variantStyles = {
-    primary: 'bg-[#1C1917] text-[#FAF8F5] hover:bg-[#292524] shadow-sm',
-    secondary: 'bg-[#F5F2EC] text-[#1C1917] hover:bg-[#EBE6DE] border border-[#E7E2DC]/60',
-    rose: 'bg-[#F5EBE6] text-[#6E4B3E] hover:bg-[#EEDFD8] border border-[#E8D5CE]/80',
-    ghost: 'bg-transparent text-[#57534E] hover:bg-[#F5F2EC] hover:text-[#1C1917]',
-    outline: 'bg-transparent text-[#1C1917] border border-[#D6CEC6] hover:bg-[#FAF8F5]',
+    // Soft satin white pill (harmonious contrast, not harsh glare)
+    'white-pill':
+      'bg-[#EBEBEF] text-[#0C0C0E] font-semibold hover:bg-[#F5F5F8] shadow-[0_2px_10px_rgba(0,0,0,0.3)] border border-white/20',
+    // Velvety obsidian dark pill
+    'dark-pill':
+      'bg-[#16161B] text-[#D4D4D8] hover:bg-[#1C1C22] hover:text-white border border-white/[0.06] shadow-xs',
+    primary:
+      'bg-[#EBEBEF] text-[#0C0C0E] hover:bg-[#F5F5F8] shadow-xs border border-white/10 font-medium',
+    secondary:
+      'bg-[#16161B] text-[#D4D4D8] hover:bg-[#1C1C22] hover:text-white border border-white/[0.06] shadow-xs',
+    ghost:
+      'bg-transparent text-[#92929B] hover:bg-white/[0.04] hover:text-[#EDEDEF]',
+    outline:
+      'bg-transparent text-[#D4D4D8] border border-white/[0.08] hover:bg-white/[0.04]',
+    rose:
+      'bg-[#18181F] text-[#D4C5B9] hover:bg-[#20202A] border border-white/[0.07]',
   }[variant];
 
   return (
@@ -55,8 +69,8 @@ export function Button({
 // --- IconButton ---
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'rose';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'white' | 'ghost' | 'rose';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   label?: string;
 }
 
@@ -69,24 +83,26 @@ export function IconButton({
   ...props
 }: IconButtonProps) {
   const sizeStyles = {
-    sm: 'w-8 h-8 rounded-full text-xs',
-    md: 'w-10 h-10 rounded-full text-sm',
-    lg: 'w-12 h-12 rounded-full text-base',
+    xs: 'w-7 h-7 text-xs',
+    sm: 'w-8 h-8 text-xs',
+    md: 'w-9 h-9 sm:w-10 sm:h-10 text-sm',
+    lg: 'w-11 h-11 text-base',
   }[size];
 
   const variantStyles = {
-    primary: 'bg-[#1C1917] text-[#FAF8F5] hover:bg-[#292524]',
-    secondary: 'bg-[#F5F2EC] text-[#1C1917] hover:bg-[#EBE6DE] border border-[#E7E2DC]',
-    ghost: 'bg-transparent text-[#57534E] hover:bg-[#F5F2EC] hover:text-[#1C1917]',
-    rose: 'bg-[#F5EBE6] text-[#6E4B3E] hover:bg-[#EEDFD8]',
+    white: 'bg-[#EBEBEF] text-[#0C0C0E] hover:bg-[#F5F5F8] shadow-sm',
+    primary: 'bg-[#EBEBEF] text-[#0C0C0E] hover:bg-[#F5F5F8] shadow-sm',
+    secondary: 'bg-[#16161B] text-[#D4D4D8] hover:bg-[#1E1E26] border border-white/[0.06]',
+    ghost: 'bg-transparent text-[#92929B] hover:bg-white/[0.04] hover:text-[#EDEDEF]',
+    rose: 'bg-[#18181F] text-[#D4C5B9] hover:bg-[#20202A] border border-white/[0.07]',
   }[variant];
 
   return (
     <button
       type="button"
-      aria-label={label}
+      className={`rounded-full inline-flex items-center justify-center transition-all duration-150 cursor-pointer select-none active:scale-90 ${sizeStyles} ${variantStyles} ${className}`}
       title={label}
-      className={`inline-flex items-center justify-center transition-transform active:scale-95 duration-150 cursor-pointer ${sizeStyles} ${variantStyles} ${className}`}
+      aria-label={label}
       {...props}
     >
       {icon}
@@ -94,37 +110,53 @@ export function IconButton({
   );
 }
 
-// --- Chip / Tag ---
-export function Tag({
-  label,
-  color = 'neutral',
-  onRemove,
-}: {
-  label: string;
-  color?: 'neutral' | 'rose' | 'gold' | 'sage';
+// --- Tag / Badge ---
+interface TagProps {
+  children?: ReactNode;
+  label?: string;
+  variant?: 'neutral' | 'amber' | 'purple' | 'green' | 'red' | 'rose';
+  color?: 'neutral' | 'amber' | 'purple' | 'green' | 'red' | 'rose';
+  size?: 'sm' | 'md';
   onRemove?: () => void;
-}) {
-  const colorStyles = {
-    neutral: 'bg-[#F5F2EC] text-[#57534E] border-[#E7E2DC]/80',
-    rose: 'bg-[#FBF5F2] text-[#8C5D50] border-[#E8D5CE]',
-    gold: 'bg-[#FDFBF7] text-[#8C7350] border-[#E2D5C3]',
-    sage: 'bg-[#F4F7F4] text-[#4A6E53] border-[#D0DDD1]',
-  }[color];
+  className?: string;
+}
+
+export function Tag({
+  children,
+  label,
+  variant,
+  color,
+  size = 'sm',
+  onRemove,
+  className = '',
+}: TagProps) {
+  const effectiveVariant = variant || color || 'neutral';
+  const sizeStyle = size === 'sm' ? 'text-[11px] px-2.5 py-0.5' : 'text-xs px-3 py-1';
+  
+  const variantStyle = {
+    neutral: 'bg-white/[0.04] text-[#A1A1AA] border border-white/[0.06]',
+    amber: 'bg-amber-400/[0.08] text-amber-300/90 border border-amber-400/20 font-medium',
+    purple: 'bg-purple-400/[0.08] text-purple-300/90 border border-purple-400/20 font-medium',
+    green: 'bg-emerald-400/[0.08] text-emerald-300/90 border border-emerald-400/20 font-medium',
+    red: 'bg-rose-400/[0.08] text-rose-300/90 border border-rose-400/20 font-medium',
+    rose: 'bg-white/[0.05] text-[#D4C5B9] border border-white/[0.07] font-medium',
+  }[effectiveVariant];
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs rounded-full border tracking-wide whitespace-nowrap font-normal ${colorStyles}`}
+      className={`inline-flex items-center gap-1 rounded-full tracking-tight whitespace-nowrap ${sizeStyle} ${variantStyle} ${className}`}
     >
-      <span>#{label}</span>
+      <span>{children || label}</span>
       {onRemove && (
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onRemove();
           }}
-          className="hover:text-red-500 ml-0.5 text-xs cursor-pointer"
+          className="hover:text-white transition-colors p-0.5"
         >
-          ×
+          <X className="w-2.5 h-2.5" />
         </button>
       )}
     </span>
@@ -132,38 +164,52 @@ export function Tag({
 }
 
 // --- Avatar ---
+interface AvatarProps {
+  name?: string;
+  src?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  status?: 'online' | 'offline';
+  className?: string;
+}
+
 export function Avatar({
   name = 'Safa',
+  src,
   size = 'md',
-  showStatus = false,
-}: {
-  name?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  showStatus?: boolean;
-}) {
-  const sizeMap = {
+  status,
+  className = '',
+}: AvatarProps) {
+  const sizeStyle = {
+    xs: 'w-6 h-6 text-[10px]',
     sm: 'w-7 h-7 text-xs',
     md: 'w-9 h-9 text-sm',
-    lg: 'w-12 h-12 text-base font-medium',
-    xl: 'w-16 h-16 text-lg font-serif-luxury font-medium',
+    lg: 'w-12 h-12 text-base font-semibold',
   }[size];
 
-  const initials = name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  const initial = name ? name.charAt(0).toUpperCase() : 'S';
 
   return (
-    <div className="relative inline-flex shrink-0">
-      <div
-        className={`${sizeMap} rounded-full bg-gradient-to-br from-[#F5EBE6] to-[#E8D5CE] text-[#5A3A30] flex items-center justify-center font-medium border border-[#FFFFFF] shadow-sm select-none`}
-      >
-        <span>{initials}</span>
-      </div>
-      {showStatus && (
-        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
+    <div className="relative inline-block shrink-0">
+      {src ? (
+        <img
+          src={src}
+          alt={name}
+          className={`rounded-full object-cover ring-1 ring-white/10 ${sizeStyle} ${className}`}
+          referrerPolicy="no-referrer"
+        />
+      ) : (
+        <div
+          className={`rounded-full bg-[#1A1A20] text-[#D4D4D8] flex items-center justify-center font-medium ring-1 ring-white/10 ${sizeStyle} ${className}`}
+        >
+          {initial}
+        </div>
+      )}
+      {status && (
+        <span
+          className={`absolute bottom-0 right-0 rounded-full ring-2 ring-[#0B0B0D] ${
+            status === 'online' ? 'bg-emerald-400' : 'bg-zinc-500'
+          } ${size === 'xs' || size === 'sm' ? 'w-2 h-2' : 'w-2.5 h-2.5'}`}
+        />
       )}
     </div>
   );

@@ -3,8 +3,39 @@
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    --font-serif: 'Cormorant Garamond', Georgia, serif;
     --font-persian: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  /*
+   * SAFA Pure OLED Black & Liquid Glass Design System
+   * Zero blue-tint, deep obsidian & charcoal, rim-lit glass cards with vibrant auras
+   */
+  .dark {
+    --bg-canvas: #050507;
+    --bg-surface: #0E0E13;
+    --bg-card: #0E0F14;
+    --bg-card-hover: #131319;
+    --border-subtle: transparent;
+    --border-specular: rgba(255, 255, 255, 0.06);
+    --text-primary: #FFFFFF;
+    --text-secondary: #8E8E98;
+    --text-muted: #5C5C68;
+    --dock-bg: rgba(14, 14, 19, 0.90);
+    --dock-border: rgba(255, 255, 255, 0.07);
+  }
+
+  .light {
+    --bg-canvas: #F5F5F8;
+    --bg-surface: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-card-hover: #F8F8FA;
+    --border-subtle: rgba(0, 0, 0, 0.045);
+    --border-specular: rgba(255, 255, 255, 1);
+    --text-primary: #111116;
+    --text-secondary: #646470;
+    --text-muted: #9494A0;
+    --dock-bg: rgba(255, 255, 255, 0.94);
+    --dock-border: rgba(0, 0, 0, 0.05);
   }
 
   [dir="rtl"] {
@@ -15,54 +46,211 @@
     font-family: var(--font-sans);
   }
 
-  /* Custom subtle scrollbar */
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    user-select: none;
+  }
+
+  /* Micro-subtle scrollbar */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 3px;
+    height: 3px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(140, 130, 125, 0.2);
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(140, 130, 125, 0.35);
+    background: rgba(255, 255, 255, 0.2);
   }
 }
 
-.font-serif-luxury {
-  font-family: var(--font-serif);
-}
-
+/* Typography Helpers */
 .font-persian-luxury {
   font-family: var(--font-persian);
 }
 
-/* Glass & Luxury Elevation Utilities */
-.luxury-glass {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(240, 230, 224, 0.6);
+/* Velvet Materials & Seamless Rim-Lit Obsidian Glass Cards */
+.material-obsidian-card {
+  position: relative;
+  background: #0F0F13;
+  border-radius: 28px;
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 16px 40px -10px rgba(0, 0, 0, 0.65);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.luxury-glass-dark {
-  background: rgba(28, 25, 23, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.material-obsidian-card:hover {
+  background: #131318;
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+    0 24px 48px -12px rgba(0, 0, 0, 0.8);
 }
 
-.subtle-shadow {
-  box-shadow: 0 4px 20px -2px rgba(44, 38, 35, 0.04), 0 2px 6px -1px rgba(44, 38, 35, 0.02);
+.light .material-obsidian-card {
+  background: #FFFFFF;
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    0 10px 30px -6px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.035);
 }
 
-.elevated-shadow {
-  box-shadow: 0 12px 32px -4px rgba(44, 38, 35, 0.07), 0 4px 12px -2px rgba(44, 38, 35, 0.03);
+.light .material-obsidian-card:hover {
+  background: #FFFFFF;
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    0 16px 40px -8px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.045);
 }
 
-.floating-shadow {
-  box-shadow: 0 20px 45px -8px rgba(44, 38, 35, 0.12), 0 6px 16px -3px rgba(44, 38, 35, 0.04);
+/* Vibrant Living Aura Accents for Cards */
+.card-aura-emerald {
+  background-image: radial-gradient(circle at 8% 0%, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.08) 35%, transparent 65%);
+}
+
+.card-aura-sapphire {
+  background-image: radial-gradient(circle at 92% 5%, rgba(59, 130, 246, 0.22) 0%, rgba(99, 102, 241, 0.08) 35%, transparent 65%);
+}
+
+.card-aura-sunset {
+  background-image: radial-gradient(circle at 50% -10%, rgba(249, 115, 22, 0.18) 0%, rgba(168, 85, 247, 0.08) 40%, transparent 70%);
+}
+
+.card-aura-ruby {
+  background-image: radial-gradient(circle at 10% 10%, rgba(244, 63, 94, 0.2) 0%, rgba(234, 88, 12, 0.08) 35%, transparent 65%);
+}
+
+.glass-pill-active {
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Studio Canvas - Deep Charcoal Jet Black */
+.studio-dark-canvas {
+  background-color: #050507;
+  background-image: radial-gradient(80% 60% at 50% 0%, #0E0E14 0%, #050507 70%);
+}
+
+.material-obsidian-pill {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Unified Subtle Insight Card */
+.material-insight-glow {
+  background: linear-gradient(145deg, #141318 0%, #111114 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 28px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Floating Navigation Dock */
+.material-dock {
+  background: var(--dock-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--dock-border);
+  box-shadow: 0 16px 44px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Authentic Liquid Glass for Light Mode Dock (Ultra-Soft, Seamless Blend) */
+.liquid-glass-light-dock {
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.5),
+    0 12px 32px -8px rgba(0, 0, 0, 0.04);
+}
+
+.liquid-glass-light-active-cushion {
+  background: rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.015);
+  box-shadow: 
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Authentic Liquid Glass for Dark Mode Dock (Whisper-Thin Border, Pure Velvet Melt) */
+.liquid-glass-dark-dock {
+  background: rgba(14, 14, 19, 0.48);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.018);
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.025),
+    0 18px 42px -10px rgba(0, 0, 0, 0.65);
+}
+
+/* Segmented LED Progress Bar */
+.progress-led-block {
+  width: 12px;
+  height: 6px;
+  border-radius: 3px;
+  transition: all 0.25s ease;
+}
+
+.progress-led-block.active {
+  background-color: #E2E2E8;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.progress-led-block.inactive {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Tactile Soft Diffusion Elevation Shadows */
+.shadow-e1 {
+  box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+}
+
+.shadow-e2 {
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+.shadow-e3 {
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.shadow-e4 {
+  box-shadow: 0 24px 56px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Safe Area Insets for iOS */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 12px);
+}
+
+/* Hide Scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
