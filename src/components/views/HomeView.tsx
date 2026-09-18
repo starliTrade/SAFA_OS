@@ -1,56 +1,143 @@
 /**
- * SAFA — Home View (Clean, Refined 5 Core Cards)
- * 1. Income Velocity
- * 2. Ethereum Sparkline
- * 3. Today Spending
- * 4. Project Progress
- * 5. Streak & Habit
+ * SAFA — Home 2.0: SAFA TODAY (Build 02.1)
+ * Obsidian Liquid Glass (SOLG) Unified Personal Life OS Today Space
+ *
+ * Hierarchy:
+ * 1. Header & Time-Aware Greeting
+ * 2. TodayRail (Temporal Projection Selector)
+ * 3. Today's Focus (Single Prominent Priority)
+ * 4. Daily Schedule & Real-Time Timeline
+ * 5. Actions & Rituals (Tasks & Habit Streaks)
+ * 6. Continue / In-Progress Projects
+ * 7. Personal Memory & Reflection Space
  */
 
-import React from 'react';
-import { motion } from 'motion/react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../core/context/AuthContext';
 import { useApp } from '../../core/context/AppContext';
-import { VelocityBarCard } from '../widgets/VelocityBarCard';
-import { RhythmSparklineCard } from '../widgets/RhythmSparklineCard';
-import { SpendingSpectrumCard } from '../widgets/SpendingSpectrumCard';
-import { ProjectProgressCard } from '../widgets/ProjectProgressCard';
-import { StreakHabitCard } from '../widgets/StreakHabitCard';
+import { useObjects } from '../../core/context/ObjectContext';
+import { TodayRail } from '../home/TodayRail';
+import { DailyTimeline } from '../home/DailyTimeline';
+import { BaseObject, ObjectType, ObjectStatus } from '../../core/types/objects';
 import {
-  Search,
-  Mic,
-  LayoutGrid,
-  Bell,
-  TrendingUp,
   Sparkles,
+  CheckCircle2,
+  Circle,
+  Flame,
+  ArrowUpRight,
+  Bookmark,
+  Layers,
+  Calendar,
+  Compass,
+  Check,
+  ChevronRight,
+  BookOpen,
+  Quote,
+  Target,
 } from 'lucide-react';
 
 export function HomeView() {
   const { user, isRTL } = useAuth();
-  const {
-    openCapture,
-    setIsSearchOpen,
-    activeChip,
-    setActiveChip,
-    prioritySearch,
-    setPrioritySearch,
-    themeMode,
-  } = useApp();
+  const { openCapture, themeMode } = useApp();
+  const { objects, updateObject, setSelectedObject } = useObjects();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const isDark = themeMode === 'dark';
 
-  const now = new Date();
-  const dayName = now.toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', { weekday: 'long' });
-  const dayNum = now.getDate();
-  const monthName = now.toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', { month: 'long' });
+  const isSameDay = (d1: Date, d2: Date) => {
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
+  };
 
-  const hour = now.getHours();
-  const timeGreeting = hour < 12 ? (isRTL ? 'صبح بخیر' : 'Good morning') : hour < 18 ? (isRTL ? 'عصر بخیر' : 'Good afternoon') : (isRTL ? 'شب بخیر' : 'Good evening');
-  const userName = user?.profile?.name || (isRTL ? 'کاربر گرامی' : 'Louis Bloom');
+  const isToday = isSameDay(selectedDate, new Date());
+
+  // Greeting & Date calculations
+  const now = new Date();
+  const currentHour = now.getHours();
+  const timeGreeting =
+    currentHour < 12
+      ? isRTL ? 'صبح بخیر' : 'Good morning'
+      : currentHour < 18
+      ? isRTL ? 'عصر بخیر' : 'Good afternoon'
+      : isRTL ? 'شب بخیر' : 'Good evening';
+
+  const userName = user?.profile?.name || (isRTL ? 'صفا' : 'Safa');
+
+  const selectedDateFormatted = selectedDate.toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  // Filter objects from unified ObjectContext
+  const activeTasks = objects.filter(
+    (o) => o.type === ObjectType.TASK && o.status !== ObjectStatus.TRASHED
+  );
+  const activeHabits = objects.filter(
+    (o) => o.type === ObjectType.HABIT && o.status !== ObjectStatus.TRASHED
+  );
+  const activeProjects = objects.filter(
+    (o) => o.type === ObjectType.PROJECT && o.status !== ObjectStatus.TRASHED
+  );
+  const memories = objects.filter(
+    (o) => (o.type === ObjectType.MEMORY || o.type === ObjectType.NOTE) && o.status !== ObjectStatus.TRASHED
+  );
+
+  // Today's Primary Focus: Pick high priority task or major active project
+  const focusObject =
+    activeProjects.find((p) => p.metadata?.priority === 'high') ||
+    activeProjects[0] ||
+    activeTasks.find((t) => t.metadata?.priority === 'high') ||
+    activeTasks[0];
+
+  // Continue section: Top in-progress item
+  const continueItem =
+    activeProjects[1] ||
+    objects.find(
+      (o) =>
+        (o.type === ObjectType.NOTE || o.type === ObjectType.BOOK || o.type === ObjectType.PHOTO) &&
+        o.status !== ObjectStatus.TRASHED
+    ) ||
+    activeTasks[1];
+
+  // Reflection/Memory quote
+  const memoryHighlight = memories[0];
+
+  const handleToggleTask = async (task: BaseObject, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const isDone = task.status === ObjectStatus.COMPLETED;
+    try {
+      await updateObject(task.id, {
+        status: isDone ? ObjectStatus.ACTIVE : ObjectStatus.COMPLETED,
+      });
+    } catch (err) {
+      console.error('Failed to toggle task:', err);
+    }
+  };
+
+  const handleIncrementStreak = async (habit: BaseObject, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const currentStreak = habit.metadata?.streak ?? 0;
+    try {
+      await updateObject(habit.id, {
+        metadata: {
+          ...habit.metadata,
+          streak: currentStreak + 1,
+          lastCheckedDate: new Date().toISOString(),
+        },
+      });
+    } catch (err) {
+      console.error('Failed to increment habit:', err);
+    }
+  };
 
   return (
-    <div className="space-y-6 pb-28 max-w-4xl mx-auto px-1 sm:px-3">
-      {/* 1. Header Greeting & Date */}
+    <div className="space-y-6 pb-28 max-w-2xl mx-auto px-2 sm:px-4 select-none">
+      {/* 1. Header & Time-Aware Context */}
       <motion.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -58,200 +145,340 @@ export function HomeView() {
         className="pt-1 flex items-start justify-between gap-4"
       >
         <div>
-          {/* Date with glowing coral dot */}
-          <div className={`flex items-center gap-1.5 text-xs font-medium tracking-tight mb-1.5 ${isDark ? 'text-[#8E8E98]' : 'text-zinc-500'}`}>
-            <span>{dayName} {dayNum}</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block shrink-0 shadow-[0_0_8px_rgba(244,63,94,0.7)] animate-pulse" />
-            <span>{monthName}</span>
+          <div className="flex items-center gap-2 text-xs font-medium tracking-tight mb-1.5 text-[#8E8E98] dark:text-[#8E8E98] light:text-zinc-500">
+            <span>{selectedDateFormatted}</span>
+            {isToday && (
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block shrink-0 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse" />
+            )}
           </div>
 
-          {/* Greeting Typography with crisp light & dark colors */}
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight">
-            <span className={isDark ? 'text-[#8E8E98]' : 'text-zinc-500'}>{timeGreeting},</span>
-            <br />
-            <span className={isDark ? 'text-white drop-shadow-sm' : 'text-zinc-950 font-extrabold'}>{userName}!</span>
+            <span className="text-[#8E8E98] dark:text-[#8E8E98] light:text-zinc-500 font-medium">
+              {timeGreeting},{' '}
+            </span>
+            <span className="text-white dark:text-white light:text-zinc-950 font-extrabold">
+              {userName}
+            </span>
           </h1>
         </div>
 
-        {/* Ambient decorative icon button */}
+        {/* Quick Capture Button */}
         <button
           type="button"
           onClick={() => openCapture()}
-          className={`p-2.5 rounded-2xl backdrop-blur-xl transition-all active:scale-95 cursor-pointer ${
+          className={`p-3 rounded-full backdrop-blur-xl transition-all active:scale-95 cursor-pointer ${
             isDark
-              ? 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border border-white/[0.06] shadow-[0_4px_16px_rgba(0,0,0,0.3)]'
-              : 'bg-white/80 hover:bg-white text-zinc-700 border border-black/[0.05] shadow-[0_4px_16px_rgba(0,0,0,0.04)]'
+              ? 'bg-[#0E0E13]/80 hover:bg-[#131318] text-zinc-200 border border-white/[0.04] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_6px_20px_rgba(0,0,0,0.5)]'
+              : 'bg-white hover:bg-zinc-50 text-zinc-800 border border-black/[0.05] shadow-[0_4px_16px_rgba(0,0,0,0.04)]'
           }`}
-          title="New Capture"
+          title={isRTL ? 'ثبت سریع' : 'Quick Capture'}
+          aria-label="Universal Capture"
         >
           <Sparkles className="w-4 h-4 text-rose-500" />
         </button>
       </motion.section>
 
-      {/* 2. Priority Search Capsule */}
+      {/* 2. TodayRail (Temporal Date Selector) */}
       <motion.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.05 }}
+        className="w-full"
       >
-        <div
-          className={`relative flex items-center w-full rounded-full px-5 py-3.5 transition-all duration-300 ${
+        <TodayRail selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+      </motion.section>
+
+      {/* 3. Today's Primary Focus Card */}
+      {focusObject && (
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          onClick={() => setSelectedObject(focusObject)}
+          className={`group relative p-5 sm:p-6 rounded-[26px] cursor-pointer overflow-hidden transition-all duration-300 ${
             isDark
-              ? 'bg-[#0B0C11] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),inset_0_0_0_1px_rgba(255,255,255,0.02),0_8px_24px_rgba(0,0,0,0.45)] focus-within:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_12px_32px_rgba(0,0,0,0.65)]'
-              : 'bg-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_rgba(0,0,0,0.03)] border border-black/[0.035] focus-within:border-black/[0.08] focus-within:shadow-[0_8px_28px_rgba(0,0,0,0.05)]'
+              ? 'bg-[#0E0E13] border border-white/[0.035] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_18px_40px_-10px_rgba(0,0,0,0.65)] hover:border-white/[0.08] hover:shadow-[0_22px_48px_-10px_rgba(0,0,0,0.8)]'
+              : 'bg-white border border-black/[0.04] shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:border-black/[0.08]'
           }`}
         >
-          <input
-            type="text"
-            value={prioritySearch}
-            onChange={(e) => setPrioritySearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && prioritySearch.trim()) {
-                openCapture();
-              }
-            }}
-            placeholder={isRTL ? 'اولویت بعدی شما چیست؟' : "What's your next priority?"}
-            className={`w-full bg-transparent text-sm font-medium focus:outline-none tracking-tight ${
-              isDark ? 'text-white placeholder-[#5C5C68]' : 'text-zinc-900 placeholder-zinc-400'
-            }`}
-          />
-          <div className="flex items-center gap-3 shrink-0 ml-3 rtl:mr-3 rtl:ml-0">
-            <button
-              type="button"
-              onClick={() => openCapture()}
-              className={`transition-colors cursor-pointer p-1 rounded-full ${
-                isDark ? 'text-[#8E8E98] hover:text-white' : 'text-zinc-500 hover:text-zinc-900'
-              }`}
-              title="Voice memo / Audio capture"
-            >
-              <Mic className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsSearchOpen(true)}
-              className={`transition-colors cursor-pointer p-1 rounded-full ${
-                isDark ? 'text-[#8E8E98] hover:text-white' : 'text-zinc-500 hover:text-zinc-900'
-              }`}
-              title="Search"
-            >
-              <Search className="w-4 h-4" />
-            </button>
+          {/* Subtle ambient aura */}
+          <div className="absolute top-0 right-0 w-36 h-36 bg-amber-500/[0.04] dark:bg-amber-500/[0.06] rounded-full blur-3xl pointer-events-none" />
+
+          <div className="flex items-center justify-between mb-3 relative z-10">
+            <div className="flex items-center gap-2">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/15 text-amber-400">
+                <Target className="w-3 h-3 stroke-[2.2]" />
+              </span>
+              <span className="text-[11px] uppercase font-bold tracking-wider text-amber-500">
+                {isRTL ? 'تمرکز روز' : "Today's Focus"}
+              </span>
+            </div>
+
+            {focusObject.metadata?.progress !== undefined && (
+              <span className="text-xs font-mono font-bold text-amber-400">
+                {focusObject.metadata.progress}%
+              </span>
+            )}
           </div>
+
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white dark:text-white light:text-zinc-950 leading-snug relative z-10 mb-1.5">
+            {focusObject.title}
+          </h2>
+
+          {focusObject.description && (
+            <p className="text-xs leading-relaxed text-[#8E8E98] dark:text-[#8E8E98] light:text-zinc-600 line-clamp-2 relative z-10 mb-4 font-normal">
+              {focusObject.description}
+            </p>
+          )}
+
+          {/* Progress bar if project */}
+          {focusObject.metadata?.progress !== undefined && (
+            <div className="w-full h-2 rounded-full overflow-hidden p-0.5 bg-black/40 dark:bg-black/40 light:bg-zinc-100 mb-4">
+              <div
+                className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-300 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                style={{ width: `${focusObject.metadata.progress}%` }}
+              />
+            </div>
+          )}
+
+          <div className="flex items-center justify-between pt-3 border-t border-white/[0.04] dark:border-white/[0.04] light:border-black/[0.04] relative z-10 text-xs">
+            <div className="flex items-center gap-2">
+              {focusObject.tags?.slice(0, 2).map((t) => (
+                <span
+                  key={t}
+                  className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.04] text-zinc-300 dark:text-zinc-300 light:text-zinc-700 border border-white/[0.04]"
+                >
+                  #{t}
+                </span>
+              ))}
+            </div>
+
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-400 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform">
+              <span>{isRTL ? 'مشاهده جزئیات' : 'Open Object'}</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </span>
+          </div>
+        </motion.section>
+      )}
+
+      {/* 4. Daily Schedule & Live Timeline */}
+      <motion.section
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.15 }}
+      >
+        <DailyTimeline
+          selectedDate={selectedDate}
+          isToday={isToday}
+          objects={objects}
+          onSelectObject={(obj) => setSelectedObject(obj)}
+        />
+      </motion.section>
+
+      {/* 5. Today's Actions & Rituals */}
+      <motion.section
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="space-y-3"
+      >
+        <div className="flex items-center justify-between px-1">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-[#8E8E98] dark:text-[#8E8E98] light:text-zinc-500">
+            {isRTL ? 'کارهای امروز و آیین‌ها' : "Today's Actions & Rituals"}
+          </h3>
+          <span className="text-[10px] font-mono text-[#8E8E98]">
+            {activeTasks.length + activeHabits.length} items
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          {/* Active Tasks list */}
+          {activeTasks.slice(0, 3).map((task) => {
+            const isCompleted = task.status === ObjectStatus.COMPLETED;
+            return (
+              <div
+                key={task.id}
+                onClick={() => setSelectedObject(task)}
+                className={`group flex items-center justify-between p-3.5 sm:p-4 rounded-[20px] cursor-pointer transition-all duration-200 ${
+                  isDark
+                    ? 'bg-[#0E0E13] border border-white/[0.025] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#131318]'
+                    : 'bg-white border border-black/[0.035] shadow-xs hover:border-black/[0.06]'
+                } ${isCompleted ? 'opacity-50' : ''}`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <button
+                    type="button"
+                    onClick={(e) => handleToggleTask(task, e)}
+                    className="p-0.5 text-zinc-500 hover:text-white transition-colors shrink-0 cursor-pointer"
+                    aria-label="Toggle Complete"
+                  >
+                    {isCompleted ? (
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    ) : (
+                      <Circle className="w-5 h-5 text-zinc-500 hover:text-white" />
+                    )}
+                  </button>
+
+                  <div className="min-w-0">
+                    <h4
+                      className={`text-sm font-semibold tracking-tight truncate ${
+                        isDark ? 'text-zinc-100' : 'text-zinc-950'
+                      } ${isCompleted ? 'line-through text-zinc-500' : ''}`}
+                    >
+                      {task.title}
+                    </h4>
+                    {task.description && (
+                      <p className="text-xs text-[#8E8E98] dark:text-[#8E8E98] light:text-zinc-500 truncate mt-0.5">
+                        {task.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {task.metadata?.priority === 'high' && (
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 shrink-0 ml-2 rtl:mr-2 rtl:ml-0">
+                    Priority
+                  </span>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Active Habit ritual list */}
+          {activeHabits.slice(0, 2).map((habit) => {
+            const streak = habit.metadata?.streak ?? 0;
+            return (
+              <div
+                key={habit.id}
+                onClick={() => setSelectedObject(habit)}
+                className={`group flex items-center justify-between p-3.5 sm:p-4 rounded-[20px] cursor-pointer transition-all duration-200 ${
+                  isDark
+                    ? 'bg-[#0E0E13] border border-white/[0.025] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#131318]'
+                    : 'bg-white border border-black/[0.035] shadow-xs hover:border-black/[0.06]'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <button
+                    type="button"
+                    onClick={(e) => handleIncrementStreak(habit, e)}
+                    className="w-7 h-7 rounded-full bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 flex items-center justify-center shrink-0 transition-transform active:scale-90 border border-orange-500/20 shadow-[0_0_8px_rgba(249,115,22,0.3)] cursor-pointer"
+                    title="Check-in habit ritual"
+                  >
+                    <Flame className="w-4 h-4 fill-current" />
+                  </button>
+
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-semibold tracking-tight text-zinc-100 dark:text-zinc-100 light:text-zinc-950 truncate">
+                      {habit.title}
+                    </h4>
+                    <p className="text-xs text-[#8E8E98] truncate mt-0.5">
+                      {habit.description || (isRTL ? 'آیین روزانه' : 'Daily ritual streak')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 text-xs font-mono font-bold text-orange-400 shrink-0 ml-2 rtl:mr-2 rtl:ml-0">
+                  <Flame className="w-3.5 h-3.5 fill-current" />
+                  <span>{streak} d</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </motion.section>
 
-      {/* 3. Category Chips Row */}
-      <section className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
-        {[
-          {
-            id: 'DASHBOARD',
-            label: isRTL ? 'داشبورد' : 'Dashboard',
-            icon: (
-              <span className="w-3.5 h-3.5 flex items-center justify-center text-rose-500">
-                <LayoutGrid className="w-3.5 h-3.5" />
-              </span>
-            ),
-          },
-          {
-            id: 'REMINDERS',
-            label: isRTL ? 'یادآورها' : 'Reminders',
-            icon: (
-              <span className="w-3.5 h-3.5 flex items-center justify-center text-purple-500">
-                <Bell className="w-3.5 h-3.5" />
-              </span>
-            ),
-          },
-          {
-            id: 'PROGRESS',
-            label: isRTL ? 'پیشرفت' : 'Progress',
-            icon: (
-              <span className="w-3.5 h-3.5 flex items-center justify-center text-amber-500">
-                <TrendingUp className="w-3.5 h-3.5" />
-              </span>
-            ),
-          },
-        ].map((chip) => {
-          const isActive = activeChip === chip.id;
-          return (
-            <button
-              key={chip.id}
-              type="button"
-              onClick={() => setActiveChip(chip.id as any)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold tracking-tight cursor-pointer transition-all active:scale-95 ${
-                isActive
-                  ? isDark
-                    ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18),0_4px_16px_rgba(0,0,0,0.4)] border border-white/[0.08]'
-                    : 'bg-zinc-900 text-white shadow-[0_4px_14px_rgba(0,0,0,0.15)]'
-                  : isDark
-                  ? 'bg-[#0E0E13] text-[#8E8E98] hover:text-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]'
-                  : 'bg-white/80 text-zinc-600 hover:text-zinc-950 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-black/[0.04]'
-              }`}
-            >
-              {chip.icon}
-              <span>{chip.label}</span>
-            </button>
-          );
-        })}
-      </section>
+      {/* 6. Continue / In-Progress */}
+      {continueItem && (
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
+          className="space-y-3"
+        >
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-[#8E8E98] dark:text-[#8E8E98] light:text-zinc-500">
+              {isRTL ? 'ادامه کار و پروژه‌ها' : 'Continue & In-Progress'}
+            </h3>
+          </div>
 
-      {/* 4. Side-by-Side: Card 1 (Income Velocity) & Card 2 (Ethereum Sparkline) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <VelocityBarCard
-          title={isRTL ? 'درآمد' : 'Income'}
-          metric="+ $6,593.00"
-          trend="0.23%"
-          bars={[
-            { label: 'Mar', heightPercent: 35 },
-            { label: 'Apr', heightPercent: 55 },
-            { label: 'May', heightPercent: 28 },
-            { label: 'June', heightPercent: 65 },
-            { label: 'July', heightPercent: 22 },
-            { label: 'Aug', heightPercent: 92, isHighlighted: true },
-          ]}
-        />
+          <div
+            onClick={() => setSelectedObject(continueItem)}
+            className={`group relative p-4 sm:p-5 rounded-[22px] cursor-pointer flex items-center justify-between gap-4 transition-all duration-200 ${
+              isDark
+                ? 'bg-[#0E0E13] border border-white/[0.025] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#131318]'
+                : 'bg-white border border-black/[0.035] shadow-xs hover:border-black/[0.06]'
+            }`}
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div
+                className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
+                  isDark ? 'bg-white/[0.04] text-emerald-400 border border-white/[0.04]' : 'bg-emerald-50 text-emerald-600'
+                }`}
+              >
+                <Layers className="w-5 h-5 stroke-[1.8]" />
+              </div>
 
-        <RhythmSparklineCard
-          title="Ethereum"
-          subtitle="ETH"
-          value="$2,593.16"
-          trend="0.23%"
-          tooltipValue="$68.22"
-          tooltipDate="16 Sep, 2024"
-        />
-      </section>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[9.5px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    {continueItem.type}
+                  </span>
+                </div>
+                <h4 className="text-sm font-semibold tracking-tight text-white dark:text-white light:text-zinc-950 truncate">
+                  {continueItem.title}
+                </h4>
+              </div>
+            </div>
 
-      {/* 5. Card 3: Daily Spending Widget with Glowing Ambient Halo */}
-      <section className="pt-1">
-        <SpendingSpectrumCard
-          title={isRTL ? 'مخارج امروز' : 'TODAY SPENDING'}
-          totalAmount="$192"
-          cents=".45"
-          percentage="78%"
-        />
-      </section>
+            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform shrink-0" />
+          </div>
+        </motion.section>
+      )}
 
-      {/* 6. Card 4: Project Progress */}
-      <section>
-        <ProjectProgressCard
-          title={isRTL ? 'پیشرفت پروژه' : 'Project Progress'}
-          category={isRTL ? 'طراحی اولیه نسخه دوم' : 'Onboarding prototype'}
-          progress={65}
-          dueDate={isRTL ? 'مهلت: ۷ مرداد' : 'Due July 28'}
-          collaboratorsCount={3}
-        />
-      </section>
+      {/* 7. Personal Memory & Reflection Space */}
+      {memoryHighlight && (
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          onClick={() => setSelectedObject(memoryHighlight)}
+          className={`group relative p-5 sm:p-6 rounded-[26px] cursor-pointer overflow-hidden transition-all duration-300 ${
+            isDark
+              ? 'bg-[#0B0C11] border border-white/[0.025] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03),0_12px_32px_rgba(0,0,0,0.6)] hover:border-white/[0.06]'
+              : 'bg-zinc-50 border border-black/[0.04] shadow-xs hover:border-black/[0.08]'
+          }`}
+        >
+          <div className="flex items-center gap-2 mb-2 text-rose-500">
+            <Quote className="w-3.5 h-3.5 stroke-[2.2]" />
+            <span className="text-[10.5px] uppercase font-bold tracking-wider">
+              {isRTL ? 'ثبت صفای درون' : 'Personal Reflection & Memory'}
+            </span>
+          </div>
 
-      {/* 7. Card 5: Streak & Habit Widget */}
-      <section>
-        <StreakHabitCard
-          streakDays={32}
-          currentValue={6825}
-          targetValue={10000}
-          metricLabel={isRTL ? 'قدم‌ها' : 'STEPS'}
-          completedDays={[0, 1, 2]}
-          currentDayIndex={3}
-        />
-      </section>
+          <h3 className="text-base font-bold text-white dark:text-white light:text-zinc-950 tracking-tight leading-snug mb-1">
+            "{memoryHighlight.title}"
+          </h3>
+
+          {memoryHighlight.description && (
+            <p className="text-xs text-[#8E8E98] dark:text-[#8E8E98] light:text-zinc-600 leading-relaxed italic line-clamp-3 font-serif">
+              {memoryHighlight.description}
+            </p>
+          )}
+
+          <div className="mt-3 flex items-center justify-between text-[10px] text-[#8E8E98] pt-2.5 border-t border-white/[0.03] dark:border-white/[0.03] light:border-black/[0.04]">
+            <span>
+              {new Date(memoryHighlight.createdAt).toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', {
+                month: 'short',
+                day: 'numeric',
+              })}
+            </span>
+            <span className="text-zinc-400 group-hover:text-white transition-colors">
+              {isRTL ? 'مرور خاطره' : 'Read entry'} →
+            </span>
+          </div>
+        </motion.section>
+      )}
     </div>
   );
 }
+

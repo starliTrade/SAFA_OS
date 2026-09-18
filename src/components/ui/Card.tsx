@@ -1,21 +1,18 @@
 /**
- * SAFA — Reusable Premium Surfaces & Materials
- * Replaces generic white cards with a sophisticated material hierarchy.
+ * SAFA — Obsidian Liquid Glass (SOLG) Reusable Surfaces & Card Primitives
+ * Authentic layered materials: Canvas -> Surface -> Elevated -> Liquid Glass
  */
 
 import React, { ReactNode, HTMLAttributes } from 'react';
 
 export type SurfaceVariant =
-  | 'surface'         // Material 1: Soft warm surface
-  | 'elevated'        // Material 2: Elevated clean surface with diffuse shadow
-  | 'glass'           // Material 3: True translucent glass
-  | 'hero'            // Material 4: Subtle blush/champagne luxury wash
-  | 'timeline'        // Minimal timeline track surface
-  | 'compact'         // High-density quiet surface
-  | 'flat'            // Neutral subtle background
-  | 'outline'         // Border only, no fill
-  | 'roseWash'        // Delicate rose accent
-  | 'goldWash';       // Delicate gold accent
+  | 'surface'            // Primary container surface (#0E0E13 / white)
+  | 'surfaceSecondary'   // Secondary container surface (#0B0C11)
+  | 'elevated'           // Elevated interactive surface (#131318)
+  | 'glass'              // Translucent liquid glass with blur
+  | 'compact'            // Ultra-compact quiet list container
+  | 'flat'               // Clean minimal container without shadow
+  | 'outline';           // Pure hairline container
 
 interface SurfaceProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -37,12 +34,12 @@ export function Surface({
   ...props
 }: SurfaceProps) {
   const roundMap = {
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    xl: 'rounded-xl',
-    '2xl': 'rounded-2xl',
-    '3xl': 'rounded-3xl',
+    sm: 'rounded-lg',
+    md: 'rounded-xl',
+    lg: 'rounded-2xl',
+    xl: 'rounded-[22px]',
+    '2xl': 'rounded-[26px]',
+    '3xl': 'rounded-[32px]',
     full: 'rounded-full',
   }[rounded];
 
@@ -51,30 +48,35 @@ export function Surface({
     xs: 'p-2 sm:p-2.5',
     sm: 'p-3 sm:p-3.5',
     md: 'p-4 sm:p-5',
-    lg: 'p-6 sm:p-7',
-    xl: 'p-7 sm:p-9',
+    lg: 'p-5 sm:p-6',
+    xl: 'p-6 sm:p-8',
   }[padding];
 
   const variantMap = {
-    surface: 'material-soft',
-    elevated: 'material-elevated',
-    glass: 'material-glass',
-    hero: 'material-hero',
-    timeline: 'bg-[#F9F6F1] border-l-2 border-[#C5A880] p-3',
-    compact: 'bg-white/80 border border-black/[0.04] p-2.5',
-    flat: 'bg-[#F5F1EB] border-transparent',
-    outline: 'bg-transparent border border-black/[0.08]',
-    roseWash: 'bg-[#FAF4F2] border border-[#E2CECB]/70',
-    goldWash: 'bg-[#FAF7F0] border border-[#EDE3D3]/80',
+    surface:
+      'bg-[#0E0E13] dark:bg-[#0E0E13] light:bg-white border border-white/[0.025] dark:border-white/[0.025] light:border-black/[0.04] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04),0_8px_24px_-4px_rgba(0,0,0,0.5)] light:shadow-[0_4px_16px_rgba(0,0,0,0.03)]',
+    surfaceSecondary:
+      'bg-[#0B0C11] dark:bg-[#0B0C11] light:bg-[#F8F8FA] border border-white/[0.02] dark:border-white/[0.02] light:border-black/[0.03] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]',
+    elevated:
+      'bg-[#131318] dark:bg-[#131318] light:bg-white border border-white/[0.035] dark:border-white/[0.035] light:border-black/[0.05] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_16px_36px_-6px_rgba(0,0,0,0.65)] light:shadow-[0_8px_24px_rgba(0,0,0,0.05)]',
+    glass:
+      'bg-[#0E0E13]/55 dark:bg-[#0E0E13]/55 light:bg-white/70 backdrop-blur-2xl border border-white/[0.03] dark:border-white/[0.03] light:border-black/[0.04] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04),0_18px_40px_-10px_rgba(0,0,0,0.65)]',
+    compact:
+      'bg-[#0B0C11] dark:bg-[#0B0C11] light:bg-white/90 border border-white/[0.02] dark:border-white/[0.02] light:border-black/[0.03] shadow-sm',
+    flat:
+      'bg-[#0B0C11]/80 dark:bg-[#0B0C11]/80 light:bg-zinc-100/80 border-transparent',
+    outline:
+      'bg-transparent border border-white/[0.04] dark:border-white/[0.04] light:border-black/[0.06]',
   }[variant];
 
-  const hoverStyle = hoverable || interactive
-    ? 'transition-all duration-200 hover:-translate-y-0.5 hover:shadow-e2 cursor-pointer active:scale-[0.99]'
-    : '';
+  const hoverStyle =
+    hoverable || interactive
+      ? 'transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-6px_rgba(0,0,0,0.7)] cursor-pointer active:scale-[0.99]'
+      : '';
 
   return (
     <div
-      className={`${roundMap} ${padMap} ${variantMap} ${hoverStyle} ${className}`}
+      className={`relative ${roundMap} ${padMap} ${variantMap} ${hoverStyle} ${className}`}
       {...props}
     >
       {children}
@@ -111,14 +113,3 @@ export function ElevatedSurface({
   );
 }
 
-export function HeroSurface({
-  children,
-  className = '',
-  ...props
-}: SurfaceProps) {
-  return (
-    <Surface variant="hero" rounded="3xl" padding="lg" className={className} {...props}>
-      {children}
-    </Surface>
-  );
-}

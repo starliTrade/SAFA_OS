@@ -1,87 +1,105 @@
 /**
- * SAFA — Cutting-Edge Obsidian & Tactile Design Tokens (Build 02.0)
- * Inspired by Rituraj Design, Lumina Journey, and Next-Gen iOS 18+ Aesthetics.
- * Pixel-perfect obsidian depths, illuminated progress meters, micro-hairlines,
- * and high-contrast tactile elements.
+ * SAFA — Obsidian Liquid Glass (SOLG) Unified Design Tokens (Build 02.1)
+ * The official and permanent design tokens for the SAFA Personal Life OS.
+ * Zero-bloat, velvety obsidian depths, whisper-thin borders, specular rim highlights,
+ * diffuse elevation hierarchy, and iPhone-first ergonomics.
  */
 
 export const tokens = {
-  // Obsidian Dark Theme Tokens (Default & Primary)
+  // Obsidian Dark Theme Tokens (Primary & Default)
   dark: {
     canvas: {
-      base: '#09090B',            // Deepest obsidian backdrop
-      surface: '#111113',         // Primary container surface
-      card: '#161619',            // Elevated interactive card
-      cardHover: '#1B1B1F',       // Hover card state
-      cardActive: '#222227',      // Pressed card state
-      glass: 'rgba(18, 18, 22, 0.82)', // Translucent frosted dock
-      insightBg: 'linear-gradient(135deg, rgba(38, 18, 54, 0.85) 0%, rgba(22, 16, 32, 0.95) 100%)', // Lumina purple
-      insightBorder: 'rgba(168, 85, 247, 0.28)',
-      highlightInset: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.08)',
+      base: '#050507',                  // Deepest velvet obsidian backdrop
+      surface: '#0E0E13',               // Primary container surface
+      surfaceSecondary: '#0B0C11',      // Secondary surface / inset containers
+      elevated: '#131318',              // Elevated interactive surface
+      cardHover: '#15151B',             // Hover card state
+      cardActive: '#1A1A22',            // Pressed card state
+      glass: 'rgba(14, 14, 19, 0.52)',  // Frosted liquid glass
+      glassSubtle: 'rgba(255, 255, 255, 0.035)', // Micro active cushion
+      highlightInset: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.04)',
     },
     text: {
-      primary: '#F4F4F5',         // Crisp bright white
-      secondary: '#A1A1AA',       // Clean silver neutral
-      muted: '#71717A',           // Subtle zinc
-      subtle: '#52525B',          // Dark caption
-      accentYellow: '#FACC15',    // Rituraj 79% complete amber/gold
-      accentPurple: '#C084FC',    // Lumina insight violet
-      accentGreen: '#4ADE80',     // Emerald completion tick
-      accentRed: '#F87171',       // Red dot accent
+      primary: '#EDEDEF',               // High-contrast refined silver white
+      secondary: '#8E8E98',             // Clean silver neutral (#92929B equivalent)
+      muted: '#5C5C68',                 // Subtle muted caption
+      subtle: '#454550',                // Darkest caption
+      accentCoral: '#F43F5E',           // Subtle live moment indicator dot
+      accentEmerald: '#10B981',         // Gentle completion tick
+      accentAmber: '#F59E0B',           // Warm focus / project mark
+      accentPurple: '#A855F7',          // Insight / memory mark
     },
     border: {
-      subtle: 'rgba(255, 255, 255, 0.06)',
-      medium: 'rgba(255, 255, 255, 0.10)',
-      strong: 'rgba(255, 255, 255, 0.16)',
-      active: '#FFFFFF',
+      hairline: 'rgba(255, 255, 255, 0.025)',
+      subtle: 'rgba(255, 255, 255, 0.04)',
+      medium: 'rgba(255, 255, 255, 0.07)',
+      focus: 'rgba(255, 255, 255, 0.25)',
+      active: '#EDEDEF',
+    },
+    shadow: {
+      e0: 'none',
+      e1: '0 2px 8px -1px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.03)',
+      e2: '0 8px 24px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.04)',
+      e3: '0 16px 36px -6px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+      e4: '0 24px 56px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(255, 255, 255, 0.06)',
     },
   },
 
-  // Pure Matte Light Theme Tokens (From IMG_7865)
+  // Pure Matte Light Theme Tokens (Calm porcelain companion)
   light: {
     canvas: {
-      base: '#F4F4F6',
+      base: '#F5F5F8',
       surface: '#FFFFFF',
-      card: '#FFFFFF',
+      surfaceSecondary: '#F8F8FA',
+      elevated: '#FFFFFF',
       cardHover: '#F9F9FB',
-      cardActive: '#ECECEF',
-      glass: 'rgba(255, 255, 255, 0.88)',
-      insightBg: 'linear-gradient(135deg, #F3E8FF 0%, #FAF5FF 100%)',
-      insightBorder: 'rgba(168, 85, 247, 0.25)',
+      cardActive: '#F0F0F4',
+      glass: 'rgba(255, 255, 255, 0.65)',
+      glassSubtle: 'rgba(0, 0, 0, 0.03)',
       highlightInset: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.9)',
     },
     text: {
-      primary: '#111113',
-      secondary: '#52525B',
-      muted: '#8A8A93',
-      subtle: '#A1A1AA',
-      accentYellow: '#CA8A04',
-      accentPurple: '#9333EA',
-      accentGreen: '#16A34A',
-      accentRed: '#EF4444',
+      primary: '#111116',
+      secondary: '#646470',
+      muted: '#9494A0',
+      subtle: '#B5B5BE',
+      accentCoral: '#E11D48',
+      accentEmerald: '#059669',
+      accentAmber: '#D97706',
+      accentPurple: '#7C3AED',
     },
     border: {
+      hairline: 'rgba(0, 0, 0, 0.03)',
       subtle: 'rgba(0, 0, 0, 0.05)',
       medium: 'rgba(0, 0, 0, 0.08)',
-      strong: 'rgba(0, 0, 0, 0.14)',
-      active: '#111113',
+      focus: 'rgba(0, 0, 0, 0.35)',
+      active: '#111116',
+    },
+    shadow: {
+      e0: 'none',
+      e1: '0 2px 6px 0 rgba(0, 0, 0, 0.02), inset 0 1px 0 0 rgba(255, 255, 255, 0.8)',
+      e2: '0 6px 18px -4px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.9)',
+      e3: '0 12px 28px -6px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 1)',
+      e4: '0 20px 42px -8px rgba(0, 0, 0, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 1)',
     },
   },
 
-  // Radius Tokens (Consistent iOS 18+ mathematical curves)
+  // Geometry & Radii Tokens (iOS 18+ smooth curves)
   radius: {
     pill: '9999px',
     sheet: '32px',
-    cardLg: '24px',
+    cardLg: '26px',
     cardMd: '20px',
-    cardSm: '16px',
+    cardSm: '14px',
     button: '9999px',
     iconCircle: '9999px',
   },
 
-  // Motion Transitions
+  // Motion Transitions (Tactile, smooth spring-based)
   spring: {
-    snappy: { type: 'spring', stiffness: 450, damping: 30 },
-    gentle: { type: 'spring', stiffness: 300, damping: 25 },
+    snappy: { type: 'spring', stiffness: 480, damping: 32 },
+    gentle: { type: 'spring', stiffness: 380, damping: 28 },
+    fluid: { type: 'spring', stiffness: 320, damping: 24 },
   },
 };
+

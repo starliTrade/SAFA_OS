@@ -1,10 +1,12 @@
 /**
- * SAFA — Unified Velvet Date Rail (Build 02.1)
- * Seamless dark depth (#111114) with soft satin selected token (#EBEBEF).
+ * SAFA — Obsidian Liquid Glass (SOLG) Unified Date Rail (Build 02.1)
+ * Seamless dark depth (#0E0E13) with soft satin selected token (#EDEDEF).
+ * iPhone-first touch gestures with centered active scrolling.
  */
 
 import React, { useRef, useEffect } from 'react';
 import { useAuth } from '../../core/context/AuthContext';
+import { useApp } from '../../core/context/AppContext';
 import { Check } from 'lucide-react';
 
 interface TodayRailProps {
@@ -14,6 +16,8 @@ interface TodayRailProps {
 
 export function TodayRail({ selectedDate, onSelectDate }: TodayRailProps) {
   const { isRTL } = useAuth();
+  const { themeMode } = useApp();
+  const isDark = themeMode === 'dark';
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Generate 14 days around today (-4 past days, today, +9 future days)
@@ -67,10 +71,10 @@ export function TodayRail({ selectedDate, onSelectDate }: TodayRailProps) {
   }, [selectedDate]);
 
   return (
-    <div className="w-full relative py-1 select-none">
+    <div className="w-full relative py-0.5 select-none">
       <div
         ref={scrollRef}
-        className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-2 px-1 scroll-smooth"
+        className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-1.5 px-0.5 scroll-smooth"
       >
         {days.map((d) => {
           const selected = isSameDay(d, selectedDate);
@@ -85,12 +89,12 @@ export function TodayRail({ selectedDate, onSelectDate }: TodayRailProps) {
               onClick={() => onSelectDate(d)}
               className="group relative shrink-0 flex flex-col items-center justify-center cursor-pointer transition-transform active:scale-95"
             >
-              {/* Day Label (e.g. Fri, Sat, Sun) */}
+              {/* Day Label (e.g. Fri, Sat, Sun / امروز) */}
               <span
-                className={`text-[11px] font-medium tracking-tight mb-1.5 transition-colors ${
+                className={`text-[10.5px] font-medium tracking-tight mb-1.5 transition-colors ${
                   selected
-                    ? 'text-[#EDEDEF] font-semibold'
-                    : 'text-[#686873] group-hover:text-[#A1A1AA]'
+                    ? isDark ? 'text-[#EDEDEF] font-semibold' : 'text-zinc-950 font-bold'
+                    : isDark ? 'text-[#8E8E98] group-hover:text-zinc-300' : 'text-zinc-500 group-hover:text-zinc-900'
                 }`}
               >
                 {today ? (isRTL ? 'امروز' : 'Today') : getDayOfWeekName(d)}
@@ -98,15 +102,19 @@ export function TodayRail({ selectedDate, onSelectDate }: TodayRailProps) {
 
               {/* Circular Pill Token */}
               <div
-                className={`relative w-12 h-12 rounded-full flex flex-col items-center justify-center transition-all duration-200 ${
+                className={`relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex flex-col items-center justify-center transition-all duration-200 ${
                   selected
-                    ? 'bg-[#EBEBEF] text-[#0C0C0E] shadow-[0_4px_16px_rgba(0,0,0,0.5)] font-bold'
-                    : 'bg-[#111114] text-[#92929B] border border-white/[0.035] hover:bg-[#151519] hover:border-white/[0.07] hover:text-[#EDEDEF]'
+                    ? isDark
+                      ? 'bg-[#EDEDEF] text-[#09090C] shadow-[0_4px_20px_rgba(0,0,0,0.6)] font-bold'
+                      : 'bg-zinc-950 text-white shadow-[0_4px_16px_rgba(0,0,0,0.2)] font-bold'
+                    : isDark
+                    ? 'bg-[#0E0E13] text-[#8E8E98] border border-white/[0.025] hover:bg-[#131318] hover:text-[#EDEDEF]'
+                    : 'bg-white text-zinc-600 border border-black/[0.04] hover:bg-zinc-50 hover:text-zinc-950 shadow-xs'
                 }`}
               >
                 <span
-                  className={`text-base font-medium tracking-tight ${
-                    selected ? 'font-bold text-lg' : ''
+                  className={`text-sm sm:text-base font-medium tracking-tight ${
+                    selected ? 'font-bold' : ''
                   }`}
                 >
                   {d.getDate()}
@@ -114,14 +122,24 @@ export function TodayRail({ selectedDate, onSelectDate }: TodayRailProps) {
 
                 {/* Completed Checkmark Micro-badge for Past Days */}
                 {past && !selected && (
-                  <span className="absolute -bottom-1 w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-xs bg-[#1A1A20] text-[#A1A1AA] border border-white/[0.08]">
-                    <Check className="w-2.5 h-2.5 stroke-[2.5]" />
+                  <span
+                    className={`absolute -bottom-0.5 w-3 h-3 rounded-full flex items-center justify-center shadow-xs ${
+                      isDark
+                        ? 'bg-[#15151B] text-[#8E8E98] border border-white/[0.06]'
+                        : 'bg-zinc-100 text-zinc-500 border border-black/[0.06]'
+                    }`}
+                  >
+                    <Check className="w-2 h-2 stroke-[3]" />
                   </span>
                 )}
 
                 {/* Today tiny indicator dot if not selected */}
                 {today && !selected && (
-                  <span className="absolute bottom-1 w-1 h-1 rounded-full bg-[#EDEDEF]" />
+                  <span
+                    className={`absolute bottom-1 w-1 h-1 rounded-full ${
+                      isDark ? 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.8)]' : 'bg-rose-500'
+                    }`}
+                  />
                 )}
               </div>
             </button>
@@ -131,3 +149,4 @@ export function TodayRail({ selectedDate, onSelectDate }: TodayRailProps) {
     </div>
   );
 }
+
