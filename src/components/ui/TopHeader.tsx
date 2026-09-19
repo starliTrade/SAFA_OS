@@ -16,11 +16,13 @@ import {
   Search,
   Check,
   ChevronDown,
+  Layers,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export function TopHeader() {
   const {
+    currentTab,
     setCurrentTab,
     themeMode,
     setThemeMode,
@@ -62,28 +64,49 @@ export function TopHeader() {
           <SafaBrandLogo size="md" />
         </button>
 
-        {/* Right: Chic Settings Dropdown Trigger */}
-        <div className="relative" ref={dropdownRef}>
+        {/* Right Actions: Linear-Style UI Kit Trigger & Profile Dropdown */}
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => setIsDropdownOpen((prev) => !prev)}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all active:scale-95 ${
-              isDark
-                ? 'bg-[#0E0E14]/75 hover:bg-[#14141A]/90 text-zinc-300 hover:text-white backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.035),0_8px_20px_rgba(0,0,0,0.4)] border border-white/[0.025]'
-                : 'bg-white/75 hover:bg-white/95 text-zinc-700 hover:text-zinc-950 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85),0_4px_16px_rgba(0,0,0,0.03)] border border-black/[0.03]'
+            onClick={() => setCurrentTab(currentTab === 'UIKIT' ? 'HOME' : 'UIKIT')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full cursor-pointer transition-all active:scale-95 text-xs font-mono select-none ${
+              currentTab === 'UIKIT'
+                ? isDark
+                  ? 'bg-white text-black shadow-[0_2px_12px_rgba(255,255,255,0.25)] font-bold'
+                  : 'bg-[#111116] text-white shadow-sm font-bold'
+                : isDark
+                ? 'bg-[#0E0E14]/75 hover:bg-[#14141A]/90 text-zinc-300 hover:text-white backdrop-blur-xl border border-white/[0.025] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.035)]'
+                : 'bg-white/75 hover:bg-white/95 text-zinc-700 hover:text-zinc-950 backdrop-blur-xl border border-black/[0.03]'
             }`}
-            aria-expanded={isDropdownOpen}
-            aria-label="Settings and Preferences"
+            title="UI KIT & Design System (Linear Standards)"
+            aria-label="UI KIT and Design System"
           >
-            <span className={`text-xs font-semibold tracking-tight ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
-              {user?.profile?.name || 'Studio'}
-            </span>
-            <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                isDropdownOpen ? 'rotate-180' : ''
-              } ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}
-            />
+            <Layers className="w-3.5 h-3.5 shrink-0" />
+            <span className="tracking-tight">UI KIT</span>
           </button>
+
+          {/* Chic Settings Dropdown Trigger */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all active:scale-95 ${
+                isDark
+                  ? 'bg-[#0E0E14]/75 hover:bg-[#14141A]/90 text-zinc-300 hover:text-white backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.035),0_8px_20px_rgba(0,0,0,0.4)] border border-white/[0.025]'
+                  : 'bg-white/75 hover:bg-white/95 text-zinc-700 hover:text-zinc-950 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85),0_4px_16px_rgba(0,0,0,0.03)] border border-black/[0.03]'
+              }`}
+              aria-expanded={isDropdownOpen}
+              aria-label="Settings and Preferences"
+            >
+              <span className={`text-xs font-semibold tracking-tight ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                {user?.profile?.name || 'Studio'}
+              </span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isDropdownOpen ? 'rotate-180' : ''
+                } ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}
+              />
+            </button>
 
           {/* Floating Glass Dropdown Menu */}
           <AnimatePresence>
@@ -187,6 +210,26 @@ export function TopHeader() {
                   </kbd>
                 </button>
 
+                {/* UI KIT & Design System */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    setCurrentTab('UIKIT');
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-medium cursor-pointer transition-colors ${
+                    isDark ? 'hover:bg-white/[0.06] text-[#D8D8E0]' : 'hover:bg-black/[0.04] text-[#333338]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Layers className="w-4 h-4 text-emerald-400" />
+                    <span>{isRTL ? 'کیت طراحی و دیزاین سیستم' : 'UI KIT & Design System'}</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-lg bg-emerald-400/[0.1] text-emerald-400 font-semibold">
+                    v02.1
+                  </span>
+                </button>
+
                 {/* Preferences Modal */}
                 <button
                   type="button"
@@ -207,6 +250,7 @@ export function TopHeader() {
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
         </div>
       </div>
     </header>

@@ -9,10 +9,10 @@ import { SearchBar } from '../ui/Input';
 import { ObjectType, BaseObject } from '../../core/types/objects';
 import { useObjects } from '../../core/context/ObjectContext';
 import { useApp } from '../../core/context/AppContext';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Layers } from 'lucide-react';
 
 export function GlobalSearchModal() {
-  const { isSearchOpen, setIsSearchOpen } = useApp();
+  const { isSearchOpen, setIsSearchOpen, setCurrentTab } = useApp();
   const { objects, setSelectedObject } = useObjects();
   const [query, setQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
@@ -95,6 +95,35 @@ export function GlobalSearchModal() {
 
         {/* Results List */}
         <div className="max-h-72 overflow-y-auto space-y-2 pt-2 border-t border-white/[0.06]">
+          {/* Quick Launcher for UI KIT */}
+          {(!query || 'ui kit design system linear'.includes(query.toLowerCase())) && (
+            <div
+              onClick={() => {
+                setIsSearchOpen(false);
+                setCurrentTab('UIKIT');
+              }}
+              className="p-3 rounded-xl bg-gradient-to-r from-emerald-500/[0.08] to-transparent border border-emerald-500/20 hover:border-emerald-500/40 hover:bg-emerald-500/[0.12] transition-all cursor-pointer flex items-center justify-between gap-3 group"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                  <Layers className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-white">SAFA UI KIT & Design System</span>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-300">
+                      LINEAR SPEC
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400">
+                    Comprehensive design tokens, linear issues, surfaces, inputs & feedback
+                  </p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0" />
+            </div>
+          )}
+
           {filteredResults.length === 0 ? (
             <div className="py-8 text-center text-xs text-zinc-500 font-mono">
               No objects found matching "{query}"

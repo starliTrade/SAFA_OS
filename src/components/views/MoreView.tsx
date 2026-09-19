@@ -18,11 +18,13 @@ import {
   HeartHandshake,
   Sparkles,
   Link2,
+  Layers,
+  ArrowRight,
 } from 'lucide-react';
 
 export function MoreView() {
   const { objects, setSelectedObject, getRelatedObjects } = useObjects();
-  const { openCapture, themeMode } = useApp();
+  const { openCapture, themeMode, setCurrentTab } = useApp();
   const isDark = themeMode === 'dark';
   const [activeSection, setActiveSection] = useState<'MEMORIES' | 'JOURNAL' | 'GRAPH' | 'SLO'>('MEMORIES');
 
@@ -232,6 +234,41 @@ export function MoreView() {
           </div>
         </div>
       )}
+      {/* Universal Design System & UI Kit Banner */}
+      <div
+        onClick={() => setCurrentTab('UIKIT')}
+        className={`p-5 rounded-3xl border transition-all cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+          isDark
+            ? 'bg-[#0E0E14]/80 hover:bg-[#14141C] border-white/[0.04] hover:border-emerald-500/30 shadow-[0_18px_40px_-10px_rgba(0,0,0,0.65)]'
+            : 'bg-white hover:bg-zinc-50 border-black/[0.04] hover:border-emerald-500/40 shadow-sm'
+        }`}
+      >
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 group-hover:scale-105 transition-transform">
+            <Layers className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                SAFA UI KIT & Design System
+              </h4>
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
+                Linear Standards
+              </span>
+            </div>
+            <p className={`text-xs mt-0.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+              Full token matrix, tactile Linear issues, obsidian surfaces, glass docks, and input controls.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 self-end sm:self-center">
+          <span className={`text-xs font-medium group-hover:text-emerald-400 transition-colors ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+            Explore UI Kit
+          </span>
+          <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </div>
     </div>
   );
 }

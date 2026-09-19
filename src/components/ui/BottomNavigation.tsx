@@ -118,9 +118,10 @@ export function BottomNavigation() {
   return (
     <nav
       aria-label="Bottom Navigation"
-      className="fixed bottom-0 left-0 right-0 z-40 px-3 sm:px-5 pb-safe pt-1 pointer-events-none flex justify-center items-center mb-2 sm:mb-3.5"
+      className="fixed inset-x-0 bottom-0 z-40 px-4 sm:px-6 pb-safe pt-1 pointer-events-none flex justify-center items-center mb-2.5 sm:mb-4 w-full"
+      dir="ltr"
     >
-      <div className="pointer-events-auto flex items-center gap-2 w-full max-w-[450px]">
+      <div className="pointer-events-auto flex items-center justify-center gap-2 w-full max-w-[440px] mx-auto">
         {/* Full-width Slim Liquid Glass Capsule Dock */}
         <div
           className={`relative flex-1 flex items-center justify-between p-1 rounded-full select-none transition-all duration-300 ${
@@ -137,7 +138,7 @@ export function BottomNavigation() {
                 key={item.tab}
                 type="button"
                 onClick={() => setCurrentTab(item.tab)}
-                className="group relative flex-1 py-1.5 px-1 rounded-full cursor-pointer flex flex-col items-center justify-center transition-all duration-200 active:scale-95"
+                className="group relative flex-1 min-h-[44px] py-1 px-1 rounded-full cursor-pointer flex flex-col items-center justify-center transition-all duration-200 active:scale-95"
                 title={isRTL ? item.faLabel : item.label}
                 aria-label={item.label}
               >
@@ -154,10 +155,10 @@ export function BottomNavigation() {
                   />
                 )}
 
-                <div className="relative z-10 flex flex-col items-center gap-0.5">
+                <div className="relative z-10 flex flex-col items-center justify-center gap-0.5">
                   {item.icon(isActive)}
                   <span
-                    className={`text-[9.5px] leading-tight tracking-tight transition-colors duration-200 ${
+                    className={`text-[9.5px] sm:text-[10px] leading-tight tracking-tight transition-colors duration-200 whitespace-nowrap ${
                       isActive
                         ? isDark ? 'text-[#EDEDEF] font-medium' : 'text-zinc-900 font-medium'
                         : isDark ? 'text-[#85858F] group-hover:text-zinc-300 font-normal' : 'text-zinc-500 group-hover:text-zinc-800 font-normal'
@@ -175,7 +176,7 @@ export function BottomNavigation() {
         <button
           type="button"
           onClick={() => setIsSearchOpen(true)}
-          className={`relative w-9.5 h-9.5 sm:w-10 sm:h-10 rounded-full active:scale-95 flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 ${
+          className={`relative min-w-[44px] min-h-[44px] w-11 h-11 rounded-full active:scale-95 flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 ${
             isDark
               ? 'liquid-glass-dark-dock hover:bg-[#14141E]/60 text-[#85858F] hover:text-[#EDEDEF]'
               : 'liquid-glass-light-dock hover:bg-white/50 text-zinc-600 hover:text-zinc-900'

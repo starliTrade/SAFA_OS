@@ -17,13 +17,14 @@ import { CreateView } from './components/views/CreateView';
 import { MediaView } from './components/views/MediaView';
 import { MoreView } from './components/views/MoreView';
 import { InboxView } from './components/views/InboxView';
+import { UIKitView } from './components/views/UIKitView';
 import { UniversalCaptureModal } from './components/shells/UniversalCaptureModal';
 import { GlobalSearchModal } from './components/shells/GlobalSearchModal';
 import { ObjectDetailModal } from './components/shells/ObjectDetailModal';
 import { SettingsModal } from './components/shells/SettingsModal';
 
 function MainShell() {
-  const { currentTab, viewMode, themeMode } = useApp();
+  const { currentTab, themeMode } = useApp();
   const { isRTL } = useAuth();
 
   const renderActiveView = () => {
@@ -40,6 +41,8 @@ function MainShell() {
         return <MoreView />;
       case 'INBOX':
         return <InboxView />;
+      case 'UIKIT':
+        return <UIKitView />;
       default:
         return <HomeView />;
     }
@@ -82,22 +85,6 @@ function MainShell() {
       <ToastContainer />
     </div>
   );
-
-  // iPhone frame preview mode
-  if (viewMode === 'iphone-frame') {
-    return (
-      <div className="min-h-screen bg-[#050507] flex items-center justify-center p-3 sm:p-8">
-        <div className={`relative w-full max-w-[414px] h-[870px] ${isDark ? 'bg-[#09090B]' : 'bg-[#F4F4F6]'} rounded-[54px] shadow-[0_25px_70px_rgba(0,0,0,0.8)] overflow-hidden border-[10px] border-[#1E1E24] flex flex-col ring-1 ring-white/10`}>
-          {/* Dynamic Island */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-full z-50 flex items-center justify-end px-2 select-none pointer-events-none">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#1A1816] ring-1 ring-zinc-800 mr-1" />
-          </div>
-
-          <div className="flex-1 overflow-y-auto no-scrollbar">{content}</div>
-        </div>
-      </div>
-    );
-  }
 
   return content;
 }

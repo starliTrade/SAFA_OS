@@ -6,7 +6,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ObjectType } from '../types/objects';
 
-export type NavTab = 'HOME' | 'LIFE' | 'CREATE' | 'MEDIA' | 'MORE' | 'INBOX';
+export type NavTab = 'HOME' | 'LIFE' | 'CREATE' | 'MEDIA' | 'MORE' | 'INBOX' | 'UIKIT';
 export type LifeSubview = 'TASKS' | 'CALENDAR' | 'REMINDERS' | 'GOALS' | 'HABITS' | 'PROJECTS';
 export type CreateSubview = 'NOTES' | 'IDEAS' | 'WRITING' | 'DRAWING' | 'STUDIO';
 export type MediaSubview = 'PHOTOS' | 'VIDEOS' | 'MUSIC' | 'BOOKS' | 'MOVIES';

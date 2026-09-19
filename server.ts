@@ -3,6 +3,7 @@
  * Express + Vite Server Entry Point
  */
 
+import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
